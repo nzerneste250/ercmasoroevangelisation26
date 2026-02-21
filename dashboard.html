@@ -74,10 +74,10 @@ nav ul li a:hover{
     padding:20px;
     border-radius:10px;
     box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    overflow-x:auto;   /* ADD THIS */
 }
-
 table{
-    width:100%;
+    min-width:800px;
     border-collapse: collapse;
     margin-top:20px;
 }
@@ -96,7 +96,10 @@ th{
 tr:nth-child(even){
     background:#f2f2f2;
 }
-
+.table-responsive{
+    width:100%;
+    overflow-x:auto;
+}
 /* FOOTER */
 footer{
     background:#d71920;
@@ -132,8 +135,8 @@ footer{
 </header>
 
 <h2 class="page-title">Registration Dashboard</h2>
-
 <div class="container">
+<div class="table-responsive">
 <table id="dataTable">
 <thead>
 <tr>
@@ -150,7 +153,7 @@ footer{
 <tbody></tbody>
 </table>
 </div>
-
+</div>
 <footer>
 © 2026 Evangelical Restoration Church - Masoro Parish
 </footer>
