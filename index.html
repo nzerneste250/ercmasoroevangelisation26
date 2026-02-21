@@ -7,10 +7,10 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
-body{background:#f4f6f9;color:#333;scroll-behavior:smooth;}
+body{background:#f8f9fa;color:#222;scroll-behavior:smooth;}
 
 nav{
-background:#1b4332;
+background:#d71920; /* RED */
 padding:15px 20px;
 display:flex;
 justify-content:space-between;
@@ -26,13 +26,13 @@ color:white;
 text-decoration:none;
 font-weight:bold;
 }
-nav ul li a:hover{color:#95d5b2;}
+nav ul li a:hover{color:#ffe5e5;} /* Light red hover */
 
 section{padding:60px 20px;display:none;}
 section.active{display:block;}
 
 .hero{
-background:linear-gradient(135deg,#1b4332,#40916c);
+background:linear-gradient(135deg,#d71920,#a50f15); /* Red gradient */
 color:white;
 text-align:center;
 padding:100px 20px;
@@ -45,7 +45,7 @@ margin:auto;
 background:white;
 padding:30px;
 border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 margin-top:30px;
 }
 
@@ -53,14 +53,14 @@ margin-top:30px;
 .section-box{
 margin-bottom:20px;
 padding:15px;
-border:1px solid #ddd;
+border:1px solid #eee;
 border-radius:10px;
 }
 
 .section-title{
 font-weight:bold;
 margin-bottom:10px;
-color:#1b4332;
+color:#d71920; /* RED */
 }
 
 input, select, textarea{
@@ -76,12 +76,12 @@ width:100%;
 padding:12px;
 border:none;
 border-radius:8px;
-background:#1b4332;
+background:#d71920;
 color:white;
 font-size:16px;
 cursor:pointer;
 }
-button:hover{background:#081c15;}
+button:hover{background:#a50f15;} /* Dark red */
 
 .progress{
 width:100%;
@@ -94,14 +94,14 @@ display:none;
 .progress-bar{
 width:0%;
 height:10px;
-background:#40916c;
+background:#d71920;
 border-radius:20px;
 transition:width 0.3s ease;
 }
 
 .success{
 text-align:center;
-color:green;
+color:#d71920;
 margin-top:10px;
 display:none;
 font-weight:bold;
@@ -150,7 +150,7 @@ overflow:hidden;
 position:fixed;
 bottom:20px;
 right:20px;
-background:#25D366;
+background:#25D366; /* Keep official WhatsApp green */
 color:white;
 padding:15px;
 border-radius:50%;
@@ -161,7 +161,7 @@ box-shadow:0 4px 10px rgba(0,0,0,0.3);
 
 /* FOOTER */
 footer{
-background:#1b4332;
+background:#d71920;
 color:white;
 text-align:center;
 padding:20px;
