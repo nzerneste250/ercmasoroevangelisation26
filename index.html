@@ -175,37 +175,66 @@ Registration Successful!
 </div>
 
 <script>
-const form = document.getElementById("registerForm");
-const progress = document.querySelector(".progress");
-const progressBar = document.getElementById("progressBar");
-const successMessage = document.getElementById("successMessage");
-const button = document.getElementById("registerBtn");
+const scriptURL = "PASTE_YOUhttps://script.google.com/macros/s/AKfycbw3GDMEIa6hPFN7dTonwZGZtboKJcdFlTfcffKc-5bvzgYlephQMPChJPlxuYPEI5MhWw/execR_WEB_APP_URL_HERE";
 
-form.addEventListener("submit", function(e){
+document.getElementById("registerForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
+    const button = document.getElementById("registerBtn");
+    const progress = document.querySelector(".progress");
+    const progressBar = document.getElementById("progressBar");
+    const successMessage = document.getElementById("successMessage");
+
+    // Show progress
     progress.style.display = "block";
-    successMessage.style.display = "none";
     button.disabled = true;
     button.innerText = "Processing...";
 
     let width = 0;
-    let interval = setInterval(frame, 20);
-
-    function frame(){
+    let interval = setInterval(() => {
         if(width >= 100){
             clearInterval(interval);
-            button.innerText = "Register";
-            button.disabled = false;
-            successMessage.style.display = "block";
-            form.reset();
-            progress.style.display = "none";
-            progressBar.style.width = "0%";
-        }else{
+        } else {
             width++;
             progressBar.style.width = width + "%";
         }
-    }
+    }, 15);
+
+    // Collect ALL form data
+    let formData = {
+        name: document.getElementById("name").value,
+        address: document.getElementById("address").value,
+        phone: document.getElementById("phone").value,
+        gender: document.getElementById("gender").value,
+        evangelistName: document.getElementById("evangelistName").value,
+        evangelistPhone: document.getElementById("evangelistPhone").value,
+        comment: document.getElementById("comment").value
+    };
+
+    // Send data
+    fetch(scriptURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        successMessage.style.display = "block";
+        document.getElementById("registerForm").reset();
+    })
+    .catch(error => {
+        alert("Error submitting data!");
+        console.error(error);
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.innerText = "Register";
+        progress.style.display = "none";
+        progressBar.style.width = "0%";
+    });
+
 });
 </script>
 
