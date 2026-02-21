@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<style>
+body{
+    font-family: Arial;
+    padding: 20px;
+}
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td{
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th{
+    background: #4e73df;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<h2>Registration Dashboard</h2>
+
+<table id="dataTable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Address</th>
+<th>Phone</th>
+<th>Gender</th>
+<th>Evangelist</th>
+<th>Evangelist Phone</th>
+<th>Comment</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<script>
+
+const scriptURL = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+fetch(scriptURL)
+.then(response => response.json())
+.then(data => {
+
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    data.forEach(row => {
+
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${row.name}</td>
+            <td>${row.address}</td>
+            <td>${row.phone}</td>
+            <td>${row.gender}</td>
+            <td>${row.evangelistName}</td>
+            <td>${row.evangelistPhone}</td>
+            <td>${row.comment}</td>
+            <td>${row.date}</td>
+        `;
+
+        tableBody.appendChild(tr);
+    });
+
+})
+.catch(error => console.error(error));
+
+</script>
+
+</body>
+</html>
