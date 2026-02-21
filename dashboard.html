@@ -104,6 +104,36 @@ footer{
     padding:15px;
     margin-top:40px;
 }
+/* ================= STATS CARDS ================= */
+
+.stats-container{
+    width:95%;
+    max-width:1200px;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    text-align:center;
+}
+
+.card h3{
+    font-size:16px;
+    margin-bottom:10px;
+    color:#555;
+}
+
+.card p{
+    font-size:28px;
+    font-weight:bold;
+    color:#c1121f; /* soft red */
+}
 @media(max-width:768px){
 
     table, thead, tbody, th, td, tr{
@@ -169,6 +199,22 @@ footer{
 </header>
 
 <h2 class="page-title">Registration Dashboard</h2>
+<div class="stats-container">
+    <div class="card">
+        <h3>Total Registrations</h3>
+        <p id="totalCount">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Male</h3>
+        <p id="maleCount">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Female</h3>
+        <p id="femaleCount">0</p>
+    </div>
+</div>
 <div class="container">
 <div class="table-responsive">
 <table id="dataTable">
@@ -201,8 +247,20 @@ fetch(scriptURL)
 .then(data => {
 
     const tableBody = document.querySelector("#dataTable tbody");
+    fetch(scriptURL)
+.then(response => response.json())
+.then(data => {
+
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    let total = data.length;
+    let male = 0;
+    let female = 0;
 
     data.forEach(row => {
+
+        if(row.gender === "Male") male++;
+        if(row.gender === "Female") female++;
 
         let tr = document.createElement("tr");
 
@@ -219,6 +277,10 @@ fetch(scriptURL)
 
         tableBody.appendChild(tr);
     });
+
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("maleCount").innerText = male;
+    document.getElementById("femaleCount").innerText = female;
 
 })
 .catch(error => console.error(error));
