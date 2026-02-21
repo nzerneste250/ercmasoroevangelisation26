@@ -307,14 +307,14 @@ if(width>=100){clearInterval(interval);}
 else{width++;progressBar.style.width=width+"%";}
 },15);
 
-let formData={
-name:name1.value,
-address:address.value,
-phone:phone.value,
-gender:gender.value,
-evangelistName:evangelistName.value,
-evangelistPhone:evangelistPhone.value,
-comment:comment.value
+let formData = {
+  name: document.getElementById("name1").value,
+  address: document.getElementById("address").value,
+  phone: document.getElementById("phone").value,
+  gender: document.getElementById("gender").value,
+  evangelistName: document.getElementById("evangelistName").value,
+  evangelistPhone: document.getElementById("evangelistPhone").value,
+  comment: document.getElementById("comment").value
 };
 
 fetch(scriptURL,{method:"POST",body:JSON.stringify(formData)})
