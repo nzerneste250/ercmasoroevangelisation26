@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsive Registration Form</title>
+<title>Church Registration Form</title>
 
 <style>
 
@@ -29,10 +29,10 @@ body{
 .container{
     background: #ffffff;
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 /* TITLE */
@@ -109,21 +109,10 @@ button:hover{
     font-weight: bold;
 }
 
-/* TABLET */
-@media (min-width: 600px){
+/* RESPONSIVE */
+@media (min-width: 768px){
     .container{
         padding: 35px;
-    }
-
-    input, select, textarea{
-        font-size: 15px;
-    }
-}
-
-/* DESKTOP */
-@media (min-width: 992px){
-    .container{
-        max-width: 600px;
     }
 }
 
@@ -132,7 +121,7 @@ button:hover{
 <body>
 
 <div class="container">
-<h2>REGISTRATION FORM OF EVANGELISM</h2>
+<h2>Church Registration Form</h2>
 
 <form id="registerForm">
 
@@ -175,18 +164,21 @@ Registration Successful!
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycby9vw0EK0L2u96Phe8h3HxrgqjAP7mB4sPIGJNl_DSJUMEfBjIiRBdPhzT_gZORaGuM6Q/exec";
 
-document.getElementById("registerForm").addEventListener("submit", function(e) {
+// 🔴 PASTE YOUR GOOGLE SCRIPT URL HERE
+const scriptURL = "https://script.google.com/macros/s/AKfycbwthxCl8aLHAV0cf6SdiK_rEnORuMMYF2SFg2chU6ox_s1ujpY-thK8M0W09drCXpIvOg/exec";
+
+const form = document.getElementById("registerForm");
+const button = document.getElementById("registerBtn");
+const progress = document.querySelector(".progress");
+const progressBar = document.getElementById("progressBar");
+const successMessage = document.getElementById("successMessage");
+
+form.addEventListener("submit", function(e){
     e.preventDefault();
 
-    const button = document.getElementById("registerBtn");
-    const progress = document.querySelector(".progress");
-    const progressBar = document.getElementById("progressBar");
-    const successMessage = document.getElementById("successMessage");
-
-    // Show progress
     progress.style.display = "block";
+    successMessage.style.display = "none";
     button.disabled = true;
     button.innerText = "Processing...";
 
@@ -200,7 +192,6 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         }
     }, 15);
 
-    // Collect ALL form data
     let formData = {
         name: document.getElementById("name").value,
         address: document.getElementById("address").value,
@@ -211,18 +202,14 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         comment: document.getElementById("comment").value
     };
 
-    // Send data
     fetch(scriptURL, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(res => res.text())
     .then(data => {
         successMessage.style.display = "block";
-        document.getElementById("registerForm").reset();
+        form.reset();
     })
     .catch(error => {
         alert("Error submitting data!");
@@ -236,6 +223,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
     });
 
 });
+
 </script>
 
 </body>
