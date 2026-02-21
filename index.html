@@ -1,286 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERC Masoro Evangelism</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERC Masoro Evangelism</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
+body{background:#f4f6f9;color:#333;scroll-behavior:smooth;}
 
-        body {
-            background: #f8f9fa;
-            color: #222;
-            scroll-behavior: smooth;
-        }
+nav{
+background:#1b4332;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+}
 
-        /* NAVBAR */
-        nav {
-            background: #d71920;
-            /* RED */
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+nav img{height:50px;}
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
+nav ul{list-style:none;display:flex;gap:20px;}
+nav ul li a{
+color:white;
+text-decoration:none;
+font-weight:bold;
+}
+nav ul li a:hover{color:#95d5b2;}
 
-        nav ul li a:hover {
-            color: #ffe5e5;
-        }
+section{padding:60px 20px;display:none;}
+section.active{display:block;}
 
-        /* HERO */
-        .hero {
-            background: linear-gradient(135deg, #d71920, #a50f15);
-            color: white;
-            text-align: center;
-            padding: 100px 20px;
-        }
+.hero{
+background:linear-gradient(135deg,#1b4332,#40916c);
+color:white;
+text-align:center;
+padding:100px 20px;
+}
 
-        /* CONTAINER */
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            margin-top: 30px;
-        }
+/* CONTAINER */
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+margin-top:30px;
+}
 
-        /* SECTION TITLES */
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #d71920;
-            /* RED */
-        }
+/* FORM */
+.section-box{
+margin-bottom:20px;
+padding:15px;
+border:1px solid #ddd;
+border-radius:10px;
+}
 
-        /* BUTTON */
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #d71920;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+.section-title{
+font-weight:bold;
+margin-bottom:10px;
+color:#1b4332;
+}
 
-        button:hover {
-            background: #a50f15;
-        }
+input, select, textarea{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
 
-        /* PROGRESS BAR */
-        .progress-bar {
-            width: 0%;
-            height: 10px;
-            background: #d71920;
-            border-radius: 20px;
-            transition: width 0.3s ease;
-        }
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#1b4332;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+button:hover{background:#081c15;}
 
-        /* SUCCESS */
-        .success {
-            text-align: center;
-            color: #d71920;
-            margin-top: 10px;
-            display: none;
-            font-weight: bold;
-        }
+.progress{
+width:100%;
+background:#eee;
+border-radius:20px;
+margin-top:15px;
+display:none;
+}
 
-        /* FOOTER */
-        footer {
-            background: #d71920;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-        }
+.progress-bar{
+width:0%;
+height:10px;
+background:#40916c;
+border-radius:20px;
+transition:width 0.3s ease;
+}
 
-        @media(max-width:768px) {
-            nav {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+.success{
+text-align:center;
+color:green;
+margin-top:10px;
+display:none;
+font-weight:bold;
+}
 
-            nav ul {
-                flex-direction: column;
-                margin-top: 10px;
-            }
-        }
-    </style>
+/* GALLERY */
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+margin-top:20px;
+}
+.gallery img{
+width:100%;
+height:200px;
+object-fit:cover;
+border-radius:10px;
+}
+
+/* YOUTUBE */
+.video-container{
+position:relative;
+padding-bottom:56.25%;
+height:0;
+overflow:hidden;
+margin-top:20px;
+border-radius:12px;
+}
+.video-container iframe{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+}
+
+/* MAP */
+.map{
+margin-top:20px;
+border-radius:12px;
+overflow:hidden;
+}
+
+/* WHATSAPP */
+.whatsapp{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+color:white;
+padding:15px;
+border-radius:50%;
+font-size:22px;
+text-decoration:none;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* FOOTER */
+footer{
+background:#1b4332;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:40px;
+}
+
+@media(max-width:768px){
+nav{flex-direction:column;align-items:flex-start;}
+nav ul{flex-direction:column;margin-top:10px;}
+}
+</style>
 </head>
-
 <body>
 
-    <nav>
-        <img src="logo.png" alt="ERC Masoro Logo">
-        <ul>
-            <li><a href="#" onclick="showSection('home')">Home</a></li>
-            <li><a href="#" onclick="showSection('register')">Register</a></li>
-            <li><a href="#" onclick="showSection('gallery')">Gallery</a></li>
-            <li><a href="#" onclick="showSection('sermon')">Live</a></li>
-            <li><a href="#" onclick="showSection('location')">Location</a></li>
-        </ul>
-    </nav>
+<nav>
+<img src="logo.png" alt="ERC Masoro Logo">
+<ul>
+<li><a href="#" onclick="showSection('home')">Home</a></li>
+<li><a href="#" onclick="showSection('register')">Register</a></li>
+<li><a href="#" onclick="showSection('gallery')">Gallery</a></li>
+<li><a href="#" onclick="showSection('sermon')">Live</a></li>
+<li><a href="#" onclick="showSection('location')">Location</a></li>
+</ul>
+</nav>
 
-    <!-- HOME -->
-    <section id="home" class="active">
-        <div class="hero">
-            <h1>ERC Masoro Evangelism Ministry</h1>
-            <p>“Go therefore and make disciples of all nations” — Matthew 28:19</p>
-        </div>
-    </section>
+<!-- HOME -->
+<section id="home" class="active">
+<div class="hero">
+<h1>ERC Masoro Evangelism Ministry</h1>
+<p>“Go therefore and make disciples of all nations” — Matthew 28:19</p>
+</div>
+</section>
 
-    <!-- REGISTER FORM (MAIN PURPOSE) -->
-    <section id="register">
-        <div class="container">
-            <h2>Church Registration Form</h2>
+<!-- REGISTER FORM (MAIN PURPOSE) -->
+<section id="register">
+<div class="container">
+<h2>Church Registration Form</h2>
 
-            <form id="registerForm">
+<form id="registerForm">
 
-                <div class="section-box">
-                    <div class="section-title">Personal Information</div>
-                    <input type="text" id="name1" placeholder="Full Name" required>
-                    <input type="text" id="address" placeholder="Address" required>
-                    <input type="tel" id="phone" placeholder="Phone Number" required>
+<div class="section-box">
+<div class="section-title">Personal Information</div>
+<input type="text" id="name1" placeholder="Full Name" required>
+<input type="text" id="address" placeholder="Address" required>
+<input type="tel" id="phone" placeholder="Phone Number" required>
 
-                    <select id="gender" required>
-                        <option value="">Select Gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                </div>
+<select id="gender" required>
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+</select>
+</div>
 
-                <div class="section-box">
-                    <div class="section-title">Evangelist Information</div>
-                    <input type="text" id="evangelistName" placeholder="Evangelist Name" required>
-                    <input type="tel" id="evangelistPhone" placeholder="Evangelist Phone" required>
-                    <textarea id="comment" rows="3" placeholder="Comment"></textarea>
-                </div>
+<div class="section-box">
+<div class="section-title">Evangelist Information</div>
+<input type="text" id="evangelistName" placeholder="Evangelist Name" required>
+<input type="tel" id="evangelistPhone" placeholder="Evangelist Phone" required>
+<textarea id="comment" rows="3" placeholder="Comment"></textarea>
+</div>
 
-                <button type="submit" id="registerBtn">Register</button>
+<button type="submit" id="registerBtn">Register</button>
 
-                <div class="progress">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
 
-                <div class="success" id="successMessage">
-                    Registration Successful!
-                </div>
+<div class="success" id="successMessage">
+Registration Successful!
+</div>
 
-            </form>
-        </div>
-    </section>
+</form>
+</div>
+</section>
 
-    <!-- GALLERY -->
-    <section id="gallery">
-        <div class="container">
-            <h2>Evangelism Events Gallery</h2>
-            <div class="gallery">
-                <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df">
-                <img src="https://images.unsplash.com/photo-1507692049790-de58290a4334">
-                <img src="https://images.unsplash.com/photo-1503428593586-e225b39bddfe">
-                <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7">
-            </div>
-        </div>
-    </section>
+<!-- GALLERY -->
+<section id="gallery">
+<div class="container">
+<h2>Evangelism Events Gallery</h2>
+<div class="gallery">
+<img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df">
+<img src="https://images.unsplash.com/photo-1507692049790-de58290a4334">
+<img src="https://images.unsplash.com/photo-1503428593586-e225b39bddfe">
+<img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7">
+</div>
+</div>
+</section>
 
-    <!-- LIVE -->
-    <section id="sermon">
-        <div class="container">
-            <h2>Live YouTube Sermon</h2>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID" frameborder="0"
-                    allowfullscreen></iframe>
-            </div>
-        </div>
-    </section>
+<!-- LIVE -->
+<section id="sermon">
+<div class="container">
+<h2>Live YouTube Sermon</h2>
+<div class="video-container">
+<iframe src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"
+frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+</section>
 
-    <!-- LOCATION -->
-    <section id="location">
-        <div class="container">
-            <h2>Our Location - Masoro</h2>
-            <div class="map">
-                <iframe src="https://www.google.com/maps?q=Masoro,Rwanda&output=embed" width="100%" height="400"
-                    style="border:0;" allowfullscreen></iframe>
-            </div>
-        </div>
-    </section>
+<!-- LOCATION -->
+<section id="location">
+<div class="container">
+<h2>Our Location - Masoro</h2>
+<div class="map">
+<iframe src="https://www.google.com/maps?q=Masoro,Rwanda&output=embed"
+width="100%" height="400" style="border:0;" allowfullscreen></iframe>
+</div>
+</div>
+</section>
 
-    <footer>
-        © 2026 ERC Masoro Evangelism Ministry
-    </footer>
+<footer>
+© 2026 ERC Masoro Evangelism Ministry
+</footer>
 
-    <a class="whatsapp" href="https://wa.me/2507XXXXXXXX" target="_blank">💬</a>
+<a class="whatsapp" href="https://wa.me/2507XXXXXXXX" target="_blank">💬</a>
 
-    <script>
-        function showSection(sectionId) {
-            document.querySelectorAll("section").forEach(section => {
-                section.classList.remove("active");
-            });
-            document.getElementById(sectionId).classList.add("active");
-        }
+<script>
+function showSection(sectionId){
+document.querySelectorAll("section").forEach(section=>{
+section.classList.remove("active");
+});
+document.getElementById(sectionId).classList.add("active");
+}
 
-        // GOOGLE SCRIPT
-        const scriptURL = "https://script.google.com/macros/s/AKfycbx2QRiZn1Fwedi9qT__He6mBpcOxdSCspYK8HuvCl2ccYYTDQORqTTXFTg0szwlCvnw8Q/exec";
+// GOOGLE SCRIPT
+const scriptURL="https://script.google.com/macros/s/AKfycbx2QRiZn1Fwedi9qT__He6mBpcOxdSCspYK8HuvCl2ccYYTDQORqTTXFTg0szwlCvnw8Q/exec";
 
-        const form = document.getElementById("registerForm");
-        const button = document.getElementById("registerBtn");
-        const progress = document.querySelector(".progress");
-        const progressBar = document.getElementById("progressBar");
-        const successMessage = document.getElementById("successMessage");
+const form=document.getElementById("registerForm");
+const button=document.getElementById("registerBtn");
+const progress=document.querySelector(".progress");
+const progressBar=document.getElementById("progressBar");
+const successMessage=document.getElementById("successMessage");
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            progress.style.display = "block";
-            successMessage.style.display = "none";
-            button.disabled = true;
-            button.innerText = "Processing...";
+form.addEventListener("submit",function(e){
+e.preventDefault();
+progress.style.display="block";
+successMessage.style.display="none";
+button.disabled=true;
+button.innerText="Processing...";
 
-            let width = 0;
-            let interval = setInterval(() => {
-                if (width >= 100) { clearInterval(interval); }
-                else { width++; progressBar.style.width = width + "%"; }
-            }, 15);
+let width=0;
+let interval=setInterval(()=>{
+if(width>=100){clearInterval(interval);}
+else{width++;progressBar.style.width=width+"%";}
+},15);
 
-            let formData = {
-                name: document.getElementById("name1").value,
-                address: document.getElementById("address").value,
-                phone: document.getElementById("phone").value,
-                gender: document.getElementById("gender").value,
-                evangelistName: document.getElementById("evangelistName").value,
-                evangelistPhone: document.getElementById("evangelistPhone").value,
-                comment: document.getElementById("comment").value
-            };
+let formData = {
+  name: document.getElementById("name1").value,
+  address: document.getElementById("address").value,
+  phone: document.getElementById("phone").value,
+  gender: document.getElementById("gender").value,
+  evangelistName: document.getElementById("evangelistName").value,
+  evangelistPhone: document.getElementById("evangelistPhone").value,
+  comment: document.getElementById("comment").value
+};
 
-            fetch(scriptURL, { method: "POST", body: JSON.stringify(formData) })
-                .then(res => res.text())
-                .then(() => { successMessage.style.display = "block"; form.reset(); })
-                .catch(() => alert("Error submitting data!"))
-                .finally(() => {
-                    button.disabled = false;
-                    button.innerText = "Register";
-                    progress.style.display = "none";
-                    progressBar.style.width = "0%";
-                });
-        });
-    </script>
+fetch(scriptURL,{method:"POST",body:JSON.stringify(formData)})
+.then(res=>res.text())
+.then(()=>{successMessage.style.display="block";form.reset();})
+.catch(()=>alert("Error submitting data!"))
+.finally(()=>{
+button.disabled=false;
+button.innerText="Register";
+progress.style.display="none";
+progressBar.style.width="0%";
+});
+});
+</script>
 
 </body>
-
 </html>
