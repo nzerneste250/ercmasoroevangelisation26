@@ -37,7 +37,6 @@
 <footer>
     <p>© 2026 Evangelical Restoration Church Rwanda</p>
 </footer>
-
 <script>
 const scriptURL = "https://script.google.com/macros/s/AKfycbwjWekzkrajxMJ-SZC-2xrvXsy_cx9a6Lxy0XcsRrjtMt8S8FwdfRA4K_Q0t36lCaZN/exec";
 
@@ -60,15 +59,15 @@ document.getElementById("signupForm").addEventListener("submit", function(e){
     formData.append("action", "registerUser");
 
     fetch(scriptURL, { method: "POST", body: formData })
-    .then(res => res.text())
+    .then(res => res.json())   // ✅ parse JSON
     .then(data => {
-        if(data === "SUCCESS"){
+        if(data.status === "SUCCESS"){   // ✅ check JSON
             btn.innerText = "Registered ✔ Redirecting...";
             setTimeout(() => {
                 window.location.href = "login.html";
             }, 2000);
         } else {
-            alert("Error occurred");
+            alert(data.message || "Error occurred");
             btn.innerText = "Register";
             btn.disabled = false;
         }
