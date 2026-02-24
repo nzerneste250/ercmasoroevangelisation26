@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <title>Believers Report - ERC Masoro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin:0; padding:0; }
+        header, footer { background: #961c30; color: white; padding: 15px; text-align:center; }
+        nav { background: #eee; padding: 10px; text-align:center; }
+        nav a { margin: 0 10px; text-decoration:none; color:#961c30; font-weight:bold; }
+        .container { padding: 20px; max-width: 1000px; margin:auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; text-align:left; }
+        table th { background: #961c30; color: white; }
+        table tr:nth-child(even) { background: #f2f2f2; }
+        h2 { color: #961c30; }
+        #locationChart { margin-top: 30px; }
+        #totalBelievers { font-weight: bold; }
+    </style>
 </head>
 <body>
 
@@ -26,7 +39,7 @@
         <p>Total Believers: <span id="totalBelievers">0</span></p>
     </div>
 
-    <table id="believersTable" border="1" cellpadding="8">
+    <table id="believersTable">
         <thead>
             <tr>
                 <th>ID</th>
@@ -124,9 +137,7 @@ function generateChart(believers){
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { display: false }
-            }
+            plugins: { legend: { display: false } }
         }
     });
 }
