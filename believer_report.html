@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Believers Report - ERC Masoro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f7f7f7; margin:0; padding:0; }
-        header, footer { background: #961c30; color: white; padding: 15px; text-align:center; }
-        nav { background: #eee; padding: 10px; text-align:center; }
-        nav a { margin: 0 10px; text-decoration:none; color:#961c30; font-weight:bold; }
-        .container { padding: 20px; max-width: 1000px; margin:auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        table th, table td { border: 1px solid #ddd; padding: 8px; text-align:left; }
-        table th { background: #961c30; color: white; }
-        table tr:nth-child(even) { background: #f2f2f2; }
-        h2 { color: #961c30; }
-        #locationChart { margin-top: 30px; }
-        #totalBelievers { font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<title>Believers Report - ERC Masoro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial;background:#f7f7f7;margin:0;padding:0;}
+header, footer{background:#961c30;color:white;text-align:center;padding:15px;}
+nav{text-align:center;background:#eee;padding:10px;}
+nav a{margin:0 10px;color:#961c30;font-weight:bold;text-decoration:none;}
+.container{max-width:1000px;margin:auto;background:white;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+table th, table td{border:1px solid #ddd;padding:8px;text-align:left;}
+table th{background:#961c30;color:white;}
+table tr:nth-child(even){background:#f2f2f2;}
+h2,h3{color:#961c30;}
+</style>
 </head>
 <body>
 
-<header>
-    <h1>ERC Masoro Evangelism Ministry</h1>
-</header>
+<header><h1>ERC Masoro Evangelism Ministry</h1></header>
 
 <nav>
     <a href="dashboard.html">Dashboard</a>
@@ -33,112 +29,80 @@
 </nav>
 
 <div class="container">
-    <h2>Believers Report</h2>
+<h2>Believers Report</h2>
+<p>Total Believers: <span id="totalBelievers">0</span></p>
 
-    <div>
-        <p>Total Believers: <span id="totalBelievers">0</span></p>
-    </div>
+<table id="believersTable">
+<thead>
+<tr>
+<th>ID</th><th>Name</th><th>Phone</th><th>Location</th><th>Registered By</th><th>Date</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-    <table id="believersTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Location</th>
-                <th>Registered By</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <h3>Believers by Location</h3>
-    <canvas id="locationChart" width="400" height="200"></canvas>
+<h3>Believers by Location</h3>
+<canvas id="locationChart" width="400" height="200"></canvas>
 </div>
 
-<footer>
-    <p>© 2026 ERC Masoro Evangelism Ministry</p>
-</footer>
+<footer><p>© 2026 ERC Masoro Evangelism Ministry</p></footer>
 
 <script>
-const scriptURL = "YOUR_WEB_APP_URL";
+const scriptURL = "https://script.google.com/macros/s/AKfycbx2tPiRWpPrDVlDYtdjPFEp0lmWDYtC1tqhNgXmBE6UI-60kAcooqEi7Sg1C6gd-d1W/exec";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", ()=>{
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
+    if(!username){ window.location.href="login.html"; }
 
-    if(!username){
-        window.location.href = "login.html";
-        return;
-    }
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+        localStorage.clear(); window.location.href="login.html";
+    });
 
     fetchBelievers(username, role);
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "login.html";
-    });
 });
 
 function fetchBelievers(username, role){
     const formData = new FormData();
-    formData.append("action", "getBelievers");
+    formData.append("action","getBelievers");
     formData.append("username", username);
     formData.append("role", role);
 
-    fetch(scriptURL, { method: "POST", body: formData })
-    .then(res => res.json())
-    .then(data => {
-        if(data.status === "SUCCESS"){
+    fetch(scriptURL,{method:"POST", body:formData})
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==="SUCCESS"){
             populateTable(data.data);
             generateChart(data.data);
-        } else {
-            alert("Error fetching data");
-        }
+        } else { alert("Error fetching data"); }
     })
-    .catch(err => console.error(err));
+    .catch(err=>console.error(err));
 }
 
 function populateTable(believers){
-    const tbody = document.querySelector("#believersTable tbody");
-    tbody.innerHTML = "";
-    document.getElementById("totalBelievers").innerText = believers.length;
+    const tbody=document.querySelector("#believersTable tbody");
+    tbody.innerHTML="";
+    document.getElementById("totalBelievers").innerText=believers.length;
 
-    believers.forEach(b => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${b.ID}</td>
-                        <td>${b.Name}</td>
-                        <td>${b.Phone}</td>
-                        <td>${b.Location}</td>
-                        <td>${b.RegisteredBy}</td>
-                        <td>${b.Date}</td>`;
+    believers.forEach(b=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td>${b.ID}</td><td>${b.Name}</td><td>${b.Phone}</td><td>${b.Location}</td><td>${b.RegisteredBy}</td><td>${b.Date}</td>`;
         tbody.appendChild(tr);
     });
 }
 
 function generateChart(believers){
-    const ctx = document.getElementById("locationChart").getContext("2d");
+    const ctx=document.getElementById("locationChart").getContext("2d");
+    const locationCounts={};
+    believers.forEach(b=>{ locationCounts[b.Location]=(locationCounts[b.Location]||0)+1; });
 
-    const locationCounts = {};
-    believers.forEach(b => {
-        locationCounts[b.Location] = (locationCounts[b.Location] || 0) + 1;
-    });
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(locationCounts),
-            datasets: [{
-                label: 'Believers per Location',
-                data: Object.values(locationCounts),
-                backgroundColor: '#961c30'
-            }]
+    new Chart(ctx,{
+        type:'bar',
+        data:{
+            labels:Object.keys(locationCounts),
+            datasets:[{label:'Believers per Location', data:Object.values(locationCounts), backgroundColor:'#961c30'}]
         },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } }
-        }
+        options:{responsive:true, plugins:{legend:{display:false}}}
     });
 }
 </script>
