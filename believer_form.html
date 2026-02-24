@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register Believer - ERC Masoro Evangelism Ministry</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(to right, #f5f5f5, #ffffff);
+}
+
+header {
+    background-color: #961c30;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+nav {
+    background-color: #7a1627;
+    text-align: center;
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 50%;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+input:focus {
+    border-color: #961c30;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #961c30;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.success {
+    color: green;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+// Protect page (only USER can access)
+if(localStorage.getItem("role") !== "USER"){
+    window.location.href = "login.html";
+}
+</script>
+
+<header>
+    <h1>Register New Believer</h1>
+</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="believer_form.html">Register Believer</a>
+    <a href="believer_report.html">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+    <h2>Believer Information</h2>
+
+    <form id="believerForm">
+        <input type="text" name="name" placeholder="Full Name" required>
+
+        <input type="tel"
+               name="phone"
+               id="phone"
+               placeholder="Phone (e.g. 078XXXXXXX)"
+               pattern="^0[0-9]{9}$"
+               required>
+
+        <input type="text" name="location" placeholder="Location" required>
+
+        <button type="submit" id="submitBtn">
+            Register Believer
+        </button>
+    </form>
+
+    <p id="message"></p>
+</div>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbyjTFJi7lzHjLHS9CT9GM4nbOwkHjcvyw_GzIw-qwQ4lhBpA81jQYy9fZhqwiGvDWN2/exec";
+
+document.getElementById("believerForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const phone = document.getElementById("phone").value;
+
+    // Extra validation for Rwanda numbers
+    if(!/^0[0-9]{9}$/.test(phone)){
+        document.getElementById("message").innerHTML =
+            "<span class='error'>Phone must be 10 digits and start with 0</span>";
+        return;
+    }
+
+    const btn = document.getElementById("submitBtn");
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    const formData = new FormData(this);
+    formData.append("action", "addBeliever");
+    formData.append("registeredBy", localStorage.getItem("username"));
+
+    fetch(scriptURL, {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.status === "SUCCESS"){
+            document.getElementById("message").innerHTML =
+                "<span class='success'>Believer Registered Successfully ✔</span>";
+            document.getElementById("believerForm").reset();
+            btn.innerText = "Register Believer";
+            btn.disabled = false;
+        } else {
+            document.getElementById("message").innerHTML =
+                "<span class='error'>Error saving data</span>";
+            btn.innerText = "Register Believer";
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        document.getElementById("message").innerHTML =
+            "<span class='error'>System error</span>";
+        btn.innerText = "Register Believer";
+        btn.disabled = false;
+    });
+});
+
+function logout(){
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
