@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Dashboard</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <script>
-if(localStorage.getItem("role") !== "USER"){
+if(localStorage.getItem("role") !== "ADMIN"){
     window.location.href = "login.html";
 }
 </script>
 
 <header>
-    <h1>User Dashboard</h1>
+    <h1>Admin Dashboard</h1>
 </header>
 
 <div class="container">
-    <h2>Welcome, <span id="userName"></span></h2>
+    <h2>Welcome, <span id="adminName"></span></h2>
 
     <button onclick="logout()">Logout</button>
 </div>
 
 <script>
-document.getElementById("userName").innerText = localStorage.getItem("fullName");
+document.getElementById("adminName").innerText = localStorage.getItem("fullName");
 
 function logout(){
     localStorage.clear();

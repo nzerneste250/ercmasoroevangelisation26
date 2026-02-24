@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>ERC Registration Dashboard</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+     background:#f5f7fa;
+     color:#222;
+}
+
+/* HEADER */
+header{
+    background:#b22e37; 
+    color:white;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+header .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+header img{
+    height:50px;
+    background-color: #ffffff;
+}
+
+header h1{
+    font-size:18px;
+}
+
+nav ul{
+    list-style:none;
+    display:flex;
+    gap:20px;
+}
+
+nav ul li a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+nav ul li a:hover{
+    text-decoration:underline;
+}
+
+/* PAGE TITLE */
+.page-title{
+    text-align:center;
+    color:#333;
+    margin:30px 0 10px;
+}
+
+/* TABLE */
+.container{
+    width:95%;
+    max-width:1200px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    overflow-x:auto;   /* ADD THIS */
+}
+table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+th, td{
+    border:1px solid #eee;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#f1f1f1;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#fafafa;
+}
+/* FOOTER */
+footer{
+    background:#b22e37;  
+    color:white;
+    text-align:center;
+    padding:15px;
+    margin-top:40px;
+}
+/* ================= STATS CARDS ================= */
+
+/* ================= STATS + CHART WRAPPER ================= */
+
+.stats-wrapper{
+    width:95%;
+    max-width:1200px;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:2fr 1fr; /* cards left, chart right */
+    gap:20px;
+}
+
+/* ================= STAT CARDS ================= */
+
+.stats-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    text-align:center;
+    transition:0.3s ease;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h3{
+    font-size:15px;
+    margin-bottom:8px;
+    color:#666;
+    font-weight:500;
+}
+
+.card p{
+    font-size:30px;
+    font-weight:700;
+    color:#b22e37; /* soft professional red */
+}
+
+/* ================= CHART CARD ================= */
+
+.chart-card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media(max-width:768px){
+
+    /* Stack stats + chart */
+    .stats-wrapper{
+        grid-template-columns:1fr;
+    }
+
+    /* Responsive Table */
+    table, thead, tbody, th, td, tr{
+        display:block;
+        width:100%;
+    }
+
+    thead{
+        display:none;
+    }
+
+    tr{
+        background:white;
+        margin-bottom:15px;
+        padding:15px;
+        border-radius:10px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    td{
+        border:none;
+        padding:8px 0;
+        position:relative;
+        padding-left:50%;
+        font-size:14px;
+    }
+
+    td::before{
+        position:absolute;
+        left:0;
+        width:45%;
+        font-weight:bold;
+        color:#b22e37;
+    }
+
+    td:nth-of-type(1)::before { content:"Name"; }
+    td:nth-of-type(2)::before { content:"Address"; }
+    td:nth-of-type(3)::before { content:"Phone"; }
+    td:nth-of-type(4)::before { content:"Gender"; }
+    td:nth-of-type(5)::before { content:"Evangelist"; }
+    td:nth-of-type(6)::before { content:"Evangelist Phone"; }
+    td:nth-of-type(7)::before { content:"Comment"; }
+    td:nth-of-type(8)::before { content:"Date"; }
+
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="logo.png" alt="ERC Logo">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="#">Dashboard</a></li>
+        </ul>
+    </nav>
+</header>
+
+<h2 class="page-title">Registration Dashboard</h2>
+<div class="stats-wrapper">
+
+    <div class="stats-container">
+        <div class="card">
+            <h3>Total Registrations</h3>
+            <p id="totalCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Male</h3>
+            <p id="maleCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Female</h3>
+            <p id="femaleCount">0</p>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <canvas id="genderChart"></canvas>
+    </div>
+
+</div>
+<div class="container">
+<div class="table-responsive">
+<table id="dataTable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Address</th>
+<th>Phone</th>
+<th>Gender</th>
+<th>Evangelist</th>
+<th>Evangelist Phone</th>
+<th>Comment</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+<footer>
+© 2026 Evangelical Restoration Church - Masoro Parish
+</footer>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbx2QRiZn1Fwedi9qT__He6mBpcOxdSCspYK8HuvCl2ccYYTDQORqTTXFTg0szwlCvnw8Q/exec";
+
+fetch(scriptURL)
+.then(response => response.json())
+.then(data => {
+
+    const tableBody = document.querySelector("#dataTable tbody");
+    tableBody.innerHTML = "";
+
+    let total = data.length;
+    let male = 0;
+    let female = 0;
+
+    data.forEach(row => {
+
+        if(row.gender === "Male") male++;
+        if(row.gender === "Female") female++;
+
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${row.name || ""}</td>
+            <td>${row.address || ""}</td>
+            <td>${row.phone || ""}</td>
+            <td>${row.gender || ""}</td>
+            <td>${row.evangelistName || ""}</td>
+            <td>${row.evangelistPhone || ""}</td>
+            <td>${row.comment || ""}</td>
+            <td>${row.date || ""}</td>
+        `;
+
+        tableBody.appendChild(tr);
+    });
+
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("maleCount").innerText = male;
+    document.getElementById("femaleCount").innerText = female;
+
+    // Calculate percentages
+    let malePercent = total ? ((male / total) * 100).toFixed(1) : 0;
+    let femalePercent = total ? ((female / total) * 100).toFixed(1) : 0;
+
+    // Create Chart
+    new Chart(document.getElementById("genderChart"), {
+        type: "pie",
+        data: {
+            labels: [
+                `Male (${malePercent}%)`,
+                `Female (${femalePercent}%)`
+            ],
+            datasets: [{
+                data: [male, female],
+                backgroundColor: [
+                    "#89C4FF",
+                    "#F7AFBF"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+
+})
+.catch(error => {
+    console.error("Error fetching data:", error);
+});
+
+</script>
+</body>
+</html>
