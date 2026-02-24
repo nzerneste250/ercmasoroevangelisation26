@@ -73,9 +73,15 @@ function fetchDashboard(){
             document.getElementById("totalUsers").innerText = data.totalUsers;
             document.getElementById("totalBelievers").innerText = data.totalBelievers;
             generateChart(data.locationCounts);
-        } else { alert("Error fetching dashboard data"); }
+        } else {
+            console.error("Dashboard fetch error:", data.message);
+            alert("Error fetching dashboard data: " + data.message);
+        }
     })
-    .catch(err=>console.error(err));
+    .catch(err=>{
+        console.error("Fetch error:", err);
+        alert("System error fetching dashboard data");
+    });
 }
 
 function generateChart(locationCounts){
