@@ -47,6 +47,7 @@
             width: 100%;
             padding: 12px;
             margin: 10px 0;
+            font-size: 16px;
         }
 
         button {
@@ -57,6 +58,7 @@
             border: none;
             font-weight: bold;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
@@ -110,7 +112,6 @@
 </footer>
 
 <script>
-
 const scriptURL = "https://script.google.com/macros/s/AKfycbyjTFJi7lzHjLHS9CT9GM4nbOwkHjcvyw_GzIw-qwQ4lhBpA81jQYy9fZhqwiGvDWN2/exec";
 
 document.getElementById("loginForm").addEventListener("submit", function(e){
@@ -135,8 +136,11 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
 
         if(data.status === "SUCCESS"){
 
-            // Save session
-            localStorage.setItem("username", formData.get("username"));
+            // Trim spaces from username
+            const username = formData.get("username").trim();
+
+            // Save session in localStorage
+            localStorage.setItem("username", username);
             localStorage.setItem("role", data.role);
             localStorage.setItem("fullName", data.fullName);
 
