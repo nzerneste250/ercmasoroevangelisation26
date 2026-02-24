@@ -1,33 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Admin Dashboard - ERC Masoro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial;margin:0;padding:0;background:#f7f7f7;}
+header, footer{background:#961c30;color:white;text-align:center;padding:15px;}
+nav{text-align:center;background:#eee;padding:10px;}
+nav a{margin:0 10px;color:#961c30;font-weight:bold;text-decoration:none;}
+.container{max-width:1200px;margin:auto;padding:20px;}
+.cards{display:flex;gap:20px;flex-wrap:wrap;}
+.card{background:white;flex:1;min-width:200px;padding:20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);text-align:center;}
+.card h3{margin:0;color:#961c30;}
+.card p{font-size:24px;margin-top:10px;font-weight:bold;}
+canvas{margin-top:30px;}
+</style>
 </head>
 <body>
 
-<script>
-if(localStorage.getItem("role") !== "ADMIN"){
-    window.location.href = "login.html";
-}
-</script>
+<header><h1>ERC Masoro Admin Dashboard</h1></header>
 
-<header>
-    <h1>Admin Dashboard</h1>
-</header>
+<nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="believer_form.html">Register Believer</a>
+  <a href="believer_report.html">Believers Report</a>
+  <a href="#" id="logoutBtn">Logout</a>
+</nav>
 
 <div class="container">
-    <h2>Welcome, <span id="adminName"></span></h2>
+  <h2>Overview</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p id="totalUsers">0</p>
+    </div>
+    <div class="card">
+      <h3>Total Believers</h3>
+      <p id="totalBelievers">0</p>
+    </div>
+  </div>
 
-    <button onclick="logout()">Logout</button>
+  <h3>Believers by Location</h3>
+  <canvas id="locationChart" width="600" height="300"></canvas>
 </div>
 
-<script>
-document.getElementById("adminName").innerText = localStorage.getItem("fullName");
+<footer>© 2026 ERC Masoro Evangelism Ministry</footer>
 
-function logout(){
-    localStorage.clear();
-    window.location.href = "login.html";
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbx2tPiRWpPrDVlDYtdjPFEp0lmWDYtC1tqhNgXmBE6UI-60kAcooqEi7Sg1C6gd-d1W/exec";
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+    if(!username || role !== "ADMIN"){ window.location.href="login.html"; }
+
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+        localStorage.clear(); window.location.href="login.html";
+    });
+
+    fetchDashboard();
+});
+
+function fetchDashboard(){
+    const formData = new FormData();
+    formData.append("action","getAdminStats");
+
+    fetch(scriptURL,{method:"POST",body:formData})
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==="SUCCESS"){
+            document.getElementById("totalUsers").innerText = data.totalUsers;
+            document.getElementById("totalBelievers").innerText = data.totalBelievers;
+            generateChart(data.locationCounts);
+        } else { alert("Error fetching dashboard data"); }
+    })
+    .catch(err=>console.error(err));
+}
+
+function generateChart(locationCounts){
+    const ctx = document.getElementById("locationChart").getContext("2d");
+    new Chart(ctx,{
+        type:'bar',
+        data:{
+            labels:Object.keys(locationCounts),
+            datasets:[{label:'Believers per Location',data:Object.values(locationCounts),backgroundColor:'#961c30'}]
+        },
+        options:{responsive:true,plugins:{legend:{display:false}}}
+    });
 }
 </script>
 
