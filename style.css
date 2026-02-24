@@ -1,18 +1,17 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background: linear-gradient(to right, #002147, #00509e);
-    color: white;
 }
 
 header {
-    background-color: #001a33;
+    background-color: #961c30;
+    color: white;
     text-align: center;
     padding: 20px;
 }
 
 nav {
-    background-color: #003366;
+    background-color: #7a1627;
     text-align: center;
     padding: 10px;
 }
@@ -25,19 +24,18 @@ nav a {
 }
 
 nav a:hover {
-    color: gold;
+    text-decoration: underline;
 }
 
 .container {
     width: 40%;
     margin: 40px auto;
-    background: white;
-    color: black;
+    background: #f5f5f5;
     padding: 30px;
     border-radius: 10px;
 }
 
-input, select {
+input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
@@ -45,19 +43,21 @@ input, select {
 
 button {
     width: 100%;
-    padding: 10px;
-    background-color: #002147;
+    padding: 12px;
+    background-color: #961c30;
     color: white;
     border: none;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    background-color: #00509e;
+    opacity: 0.9;
 }
 
 footer {
+    background-color: #961c30;
+    color: white;
     text-align: center;
     padding: 15px;
-    background-color: #001a33;
 }

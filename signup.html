@@ -8,14 +8,12 @@
 
 <header>
     <h1>ERC Masoro Evangelism Ministry</h1>
-    <p>Evangelical Restoration Church Rwanda</p>
 </header>
 
 <nav>
     <a href="index.html">Home</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-    <a href="believers.html">Believers</a>
 </nav>
 
 <div class="container">
@@ -25,13 +23,12 @@
         <input type="text" name="fullName" placeholder="Full Name" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
 
-        <select name="role">
-            <option value="USER">User</option>
-        </select>
-
-        <button type="submit">Register</button>
+        <button type="submit" id="registerBtn">
+            Register
+        </button>
     </form>
 
     <p id="message"></p>
@@ -42,10 +39,22 @@
 </footer>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbxSUDZ9447XIN45OPtf145CnORQR-rx6OOyok_oLTEZfNAyqjASbKP3WrbQajBnSNye/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbzTwDh1y6iOgVVAQMcJ7IKuXimjE7NazVc2HmcN1WNdgCaB_x27ULdUarQR54729Q40/exec";
 
 document.getElementById("signupForm").addEventListener("submit", function(e){
     e.preventDefault();
+
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
+
+    if(password !== confirmPassword){
+        alert("Passwords do not match!");
+        return;
+    }
+
+    const btn = document.getElementById("registerBtn");
+    btn.innerText = "Registering...";
+    btn.disabled = true;
 
     const formData = new FormData(this);
     formData.append("action", "registerUser");
@@ -53,10 +62,22 @@ document.getElementById("signupForm").addEventListener("submit", function(e){
     fetch(scriptURL, { method: "POST", body: formData })
     .then(res => res.text())
     .then(data => {
-        document.getElementById("message").innerText = data;
-        document.getElementById("signupForm").reset();
+        if(data === "SUCCESS"){
+            btn.innerText = "Registered ✔ Redirecting...";
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 2000);
+        } else {
+            alert("Error occurred");
+            btn.innerText = "Register";
+            btn.disabled = false;
+        }
     })
-    .catch(err => alert("Error: " + err));
+    .catch(err => {
+        alert("Error: " + err);
+        btn.innerText = "Register";
+        btn.disabled = false;
+    });
 });
 </script>
 
