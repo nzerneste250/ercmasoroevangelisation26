@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Believers Report - ERC Masoro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>ERC Masoro Evangelism Ministry</h1>
+</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="believer_form.html">Register Believer</a>
+    <a href="believer_report.html">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+    <h2>Believers Report</h2>
+
+    <div>
+        <p>Total Believers: <span id="totalBelievers">0</span></p>
+    </div>
+
+    <table id="believersTable" border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Registered By</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h3>Believers by Location</h3>
+    <canvas id="locationChart" width="400" height="200"></canvas>
+</div>
+
+<footer>
+    <p>© 2026 ERC Masoro Evangelism Ministry</p>
+</footer>
+
+<script>
+const scriptURL = "YOUR_WEB_APP_URL";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+
+    if(!username){
+        window.location.href = "login.html";
+        return;
+    }
+
+    fetchBelievers(username, role);
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "login.html";
+    });
+});
+
+function fetchBelievers(username, role){
+    const formData = new FormData();
+    formData.append("action", "getBelievers");
+    formData.append("username", username);
+    formData.append("role", role);
+
+    fetch(scriptURL, { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "SUCCESS"){
+            populateTable(data.data);
+            generateChart(data.data);
+        } else {
+            alert("Error fetching data");
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function populateTable(believers){
+    const tbody = document.querySelector("#believersTable tbody");
+    tbody.innerHTML = "";
+    document.getElementById("totalBelievers").innerText = believers.length;
+
+    believers.forEach(b => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${b.ID}</td>
+                        <td>${b.Name}</td>
+                        <td>${b.Phone}</td>
+                        <td>${b.Location}</td>
+                        <td>${b.RegisteredBy}</td>
+                        <td>${b.Date}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function generateChart(believers){
+    const ctx = document.getElementById("locationChart").getContext("2d");
+
+    const locationCounts = {};
+    believers.forEach(b => {
+        locationCounts[b.Location] = (locationCounts[b.Location] || 0) + 1;
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(locationCounts),
+            datasets: [{
+                label: 'Believers per Location',
+                data: Object.values(locationCounts),
+                backgroundColor: '#961c30'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
