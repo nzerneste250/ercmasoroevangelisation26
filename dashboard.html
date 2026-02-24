@@ -1,34 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>User Dashboard - ERC Masoro Evangelism Ministry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background-color: #961c30;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        nav {
+            background-color: #7a1627;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            background-color: #961c30;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
 
 <script>
-if(localStorage.getItem("role") !== "USER"){
-    window.location.href = "login.html";
-}
+    // Protect page — only USER can access
+    const role = localStorage.getItem("role");
+    if(role !== "USER"){
+        window.location.href = "login.html";
+    }
 </script>
 
 <header>
     <h1>User Dashboard</h1>
 </header>
 
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="believer_form.html">Register Believer</a>
+    <a href="believer_report.html">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+</nav>
+
 <div class="container">
     <h2>Welcome, <span id="userName"></span></h2>
+    <p>Here you can register new believers and view your reports.</p>
 
-    <button onclick="logout()">Logout</button>
+    <button onclick="window.location.href='believer_form.html'">Register New Believer</button>
+    <button onclick="window.location.href='believer_report.html'">View My Reports</button>
 </div>
 
 <script>
-document.getElementById("userName").innerText = localStorage.getItem("fullName");
+    document.getElementById("userName").innerText = localStorage.getItem("fullName");
 
-function logout(){
-    localStorage.clear();
-    window.location.href = "login.html";
-}
+    function logout(){
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
 </script>
 
 </body>
