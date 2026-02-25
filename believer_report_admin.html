@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Believers Report - ERC Masoro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family:Arial;
+    margin:0;
+    background:#f4f4f4;
+}
+
+header, footer{
+    background:#961c30;
+    color:white;
+    text-align:center;
+    padding:15px;
+}
+
+nav{
+    background:#eee;
+    padding:10px;
+    text-align:center;
+}
+
+nav a{
+    margin:0 15px;
+    text-decoration:none;
+    font-weight:bold;
+    color:#961c30;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:white;
+}
+
+table th, table td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:left;
+}
+
+table th{
+    background:#961c30;
+    color:white;
+}
+
+table tr:nth-child(even){
+    background:#f2f2f2;
+}
+
+h2,h3{
+    color:#961c30;
+}
+
+.summary{
+    font-weight:bold;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>ERC Masoro Evangelism Ministry</h1>
+</header>
+
+<nav>
+<a href="admin.html">Dashboard</a>
+<a href="believer_form.html">Register Believer</a>
+<a href="believer_report_admin.html">Believers Report</a>
+<a href="#" id="logoutBtn">Logout</a>
+</nav>
+
+<div class="container">
+
+<h2>All Registered Believers (Admin)</h2>
+
+<p class="summary">Total Believers: <span id="totalBelievers">0</span></p>
+
+<table id="believersTable">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Phone</th>
+<th>Location</th>
+<th>Registered By</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h3>Believers by Location</h3>
+<canvas id="locationChart"></canvas>
+
+</div>
+
+<footer>
+© 2026 ERC Masoro Evangelism Ministry
+</footer>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbwVBEXp2bsx-dMdGkYbU8BJ9709fKE0U1_ZiCBUhFSEzt6hfvuCxBqtVLX5_IOlg6bl/exec";
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+
+    if(!username || role !== "ADMIN"){
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", function(){
+        localStorage.clear();
+        window.location.href="login.html";
+    });
+
+    fetchAllBelievers();
+});
+
+function fetchAllBelievers(){
+
+    const formData = new FormData();
+    formData.append("action","getBelievers");
+    formData.append("role","ADMIN");
+    formData.append("username","ADMIN");
+
+    fetch(scriptURL,{
+        method:"POST",
+        body:formData
+    })
+    .then(res=>res.json())
+    .then(data=>{
+
+        if(data.status==="SUCCESS"){
+            populateTable(data.data);
+            generateChart(data.data);
+        } else {
+            alert("Error fetching believers");
+        }
+
+    })
+    .catch(err=>{
+        console.error(err);
+        alert("System error fetching believers");
+    });
+}
+
+function populateTable(believers){
+
+    const tbody = document.querySelector("#believersTable tbody");
+    tbody.innerHTML = "";
+
+    document.getElementById("totalBelievers").innerText = believers.length;
+
+    believers.forEach(b => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${b.ID}</td>
+            <td>${b.Name}</td>
+            <td>${b.Phone}</td>
+            <td>${b.Location}</td>
+            <td>${b.RegisteredBy}</td>
+            <td>${b.Date}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+function generateChart(believers){
+
+    const ctx = document.getElementById("locationChart").getContext("2d");
+
+    const locationCounts = {};
+
+    believers.forEach(b=>{
+        locationCounts[b.Location] = (locationCounts[b.Location] || 0) + 1;
+    });
+
+    new Chart(ctx,{
+        type:'bar',
+        data:{
+            labels:Object.keys(locationCounts),
+            datasets:[{
+                label:'Believers per Location',
+                data:Object.values(locationCounts),
+                backgroundColor:'#961c30'
+            }]
+        },
+        options:{
+            responsive:true,
+            plugins:{legend:{display:false}}
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
