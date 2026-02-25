@@ -182,9 +182,9 @@ function populateTable(believers){
             <td>${b.Location}</td>
             <td>${b.RegisteredBy}</td>
             <td>${b.Date}</td>
-            <td>
-                <button onclick="editBeliever('${b.ID}','${b.Name}','${b.Phone}','${b.Location}')">Edit</button>
-                <button onclick="deleteBeliever('${b.ID}')">Delete</button>
+            <td class="action-buttons">
+                <button class="btn-edit" onclick="editBeliever('${b.ID}','${b.Name}','${b.Phone}','${b.Location}')">Edit</button>
+                <button class="btn-delete" onclick="deleteBeliever('${b.ID}')">Delete</button>
             </td>
         `;
 
