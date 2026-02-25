@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register Believer - ERC Masoro Admin</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+header, footer {
+    background: #961c30;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+nav {
+    text-align: center;
+    background: #eee;
+    padding: 10px;
+}
+nav a {
+    margin: 0 10px;
+    color: #961c30;
+    font-weight: bold;
+    text-decoration: none;
+}
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+h2 { color: #961c30; text-align: center; }
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 16px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+form button {
+    width: 100%;
+    padding: 12px;
+    background: #961c30;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+form button:hover { background: #7f1624; }
+p#message { text-align: center; color: red; }
+</style>
+</head>
+<body>
+
+<header><h1>ERC Masoro Evangelism Ministry</h1></header>
+
+<nav>
+    <a href="admin.html">Dashboard</a>
+    <a href="believer_form_admin.html">Register Believer</a>
+    <a href="believer_report.html">Believers Report</a>
+    <a href="#" id="logoutBtn">Logout</a>
+</nav>
+
+<div class="container">
+<h2>Believer Registration</h2>
+
+<form id="believerForm">
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="text" name="phone" placeholder="Phone (10 digits, e.g. 0781234567)" required pattern="0\d{9}">
+    <input type="text" name="location" placeholder="Location" required>
+    <button type="submit" id="saveBtn">Register Believer</button>
+</form>
+
+<p id="message"></p>
+</div>
+
+<footer>© 2026 ERC Masoro Evangelism Ministry</footer>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbwVBEXp2bsx-dMdGkYbU8BJ9709fKE0U1_ZiCBUhFSEzt6hfvuCxBqtVLX5_IOlg6bl/exec"; // <-- replace with your Web App URL
+
+document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+    if(!username || role !== "ADMIN"){ window.location.href="login.html"; }
+
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+        localStorage.clear(); 
+        window.location.href="login.html";
+    });
+
+    document.getElementById("believerForm").addEventListener("submit", function(e){
+        e.preventDefault();
+
+        const btn = document.getElementById("saveBtn");
+        btn.innerText = "Saving...";
+        btn.disabled = true;
+        document.getElementById("message").innerText = "";
+
+        const formData = new FormData(this);
+        formData.append("action", "addBeliever");
+        formData.append("registeredBy", username);
+
+        fetch(scriptURL, {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "SUCCESS"){
+                document.getElementById("message").style.color = "green";
+                document.getElementById("message").innerText = "Believer registered successfully!";
+                btn.innerText = "Registered ✔";
+                setTimeout(()=>{ location.reload(); }, 1500);
+            } else {
+                document.getElementById("message").style.color = "red";
+                document.getElementById("message").innerText = "Error: " + data.message;
+                btn.innerText = "Register Believer";
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            document.getElementById("message").style.color = "red";
+            document.getElementById("message").innerText = "System error. Please try again.";
+            btn.innerText = "Register Believer";
+            btn.disabled = false;
+            console.error(err);
+        });
+
+    });
+});
+</script>
+
+</body>
+</html>
