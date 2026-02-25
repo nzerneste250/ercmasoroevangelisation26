@@ -170,7 +170,7 @@ function populateTable(believers){
 
     document.getElementById("totalBelievers").innerText = believers.length;
 
-    believers.forEach(b => {
+    believers.forEach(b=>{
 
         const tr = document.createElement("tr");
 
@@ -181,9 +181,64 @@ function populateTable(believers){
             <td>${b.Location}</td>
             <td>${b.RegisteredBy}</td>
             <td>${b.Date}</td>
+            <td>
+                <button onclick="editBeliever('${b.ID}','${b.Name}','${b.Phone}','${b.Location}')">Edit</button>
+                <button onclick="deleteBeliever('${b.ID}')">Delete</button>
+            </td>
         `;
 
         tbody.appendChild(tr);
+    });
+}
+function editBeliever(id, name, phone, location){
+
+    const newName = prompt("Edit Name:", name);
+    const newPhone = prompt("Edit Phone:", phone);
+    const newLocation = prompt("Edit Location:", location);
+
+    if(!newName || !newPhone || !newLocation) return;
+
+    const formData = new FormData();
+    formData.append("action","updateBeliever");
+    formData.append("id", id);
+    formData.append("name", newName);
+    formData.append("phone", newPhone);
+    formData.append("location", newLocation);
+
+    fetch(scriptURL,{
+        method:"POST",
+        body:formData
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==="SUCCESS"){
+            alert("Believer updated successfully");
+            location.reload();
+        } else {
+            alert("Update failed");
+        }
+    });
+}
+function deleteBeliever(id){
+
+    if(!confirm("Are you sure you want to delete this believer?")) return;
+
+    const formData = new FormData();
+    formData.append("action","deleteBeliever");
+    formData.append("id", id);
+
+    fetch(scriptURL,{
+        method:"POST",
+        body:formData
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==="SUCCESS"){
+            alert("Believer deleted");
+            location.reload();
+        } else {
+            alert("Delete failed");
+        }
     });
 }
 
