@@ -58,9 +58,14 @@ h2 {
 
 .chart-box {
     width: 100%;
-    max-width: 300px;
+    max-width: 250px;
     margin-top: 10px;
     display: none;
+}
+
+.empty {
+    color: #94a3b8;
+    font-size: 13px;
 }
 </style>
 </head>
@@ -100,7 +105,12 @@ fetch(API_URL)
 
     positions.forEach(position => {
 
-        let info = data[position] || { candidates: [], winner: null };
+        let info = data[position] || {
+            totalVotes: 0,
+            winner: null,
+            candidates: []
+        };
+
         let candidates = info.candidates || [];
 
         let card = document.createElement("div");
@@ -112,12 +122,19 @@ fetch(API_URL)
             ? `<div class="winner">🏆 ${info.winner.name} (${info.winner.percent}%)</div>`
             : `<div class="winner">No votes yet</div>`;
 
-        // TEXT RESULTS (IMPORTANT)
-        let rankHTML = candidates.length > 0
-            ? candidates.map((c,i)=>
+        // ✅ Show total votes
+        let totalVotes = `<div class="empty">Total Votes: ${info.totalVotes || 0}</div>`;
+
+        // ✅ Always show something meaningful
+        let rankHTML = "";
+
+        if (candidates.length > 0) {
+            rankHTML = candidates.map((c,i)=>
                 `${i+1}. ${c.name} — ${c.percent}%`
-              ).join("<br>")
-            : "No data";
+            ).join("<br>");
+        } else {
+            rankHTML = `<div class="empty">No candidates yet (0%)</div>`;
+        }
 
         let chartBox = document.createElement("div");
         chartBox.className = "chart-box";
@@ -129,43 +146,65 @@ fetch(API_URL)
         toggle.className = "toggle";
         toggle.innerText = "Show Chart";
 
-        card.innerHTML = title + winnerText + `<div class="rank">${rankHTML}</div>`;
+        card.innerHTML = title + winnerText + totalVotes + `<div class="rank">${rankHTML}</div>`;
         card.appendChild(toggle);
         card.appendChild(chartBox);
 
         container.appendChild(card);
 
-        // Only create chart if data exists
-        if (candidates.length > 0) {
+        // ✅ Always allow toggle, even if no data
+        let chart = null;
 
-            let chart = new Chart(canvas, {
+        if (candidates.length > 0) {
+            chart = new Chart(canvas, {
                 type: 'pie',
                 data: {
-                    labels: candidates.map(c=>c.name),
+                    labels: candidates.map(c => c.name),
                     datasets: [{
-                        data: candidates.map(c=>c.percent)
+                        data: candidates.map(c => c.percent)
                     }]
                 }
             });
-
-            toggle.onclick = () => {
-                if (chartBox.style.display === "none") {
-                    chartBox.style.display = "block";
-                    toggle.innerText = "Hide Chart";
-                } else {
-                    chartBox.style.display = "none";
-                    toggle.innerText = "Show Chart";
-                }
-            };
         }
+
+        toggle.onclick = () => {
+
+            if (chartBox.style.display === "none") {
+
+                chartBox.style.display = "block";
+                toggle.innerText = "Hide Chart";
+
+                // create chart lazily if needed
+                if (!chart && candidates.length > 0) {
+                    chart = new Chart(canvas, {
+                        type: 'pie',
+                        data: {
+                            labels: candidates.map(c => c.name),
+                            datasets: [{
+                                data: candidates.map(c => c.percent)
+                            }]
+                        }
+                    });
+                }
+
+            } else {
+                chartBox.style.display = "none";
+                toggle.innerText = "Show Chart";
+            }
+        };
 
     });
 
+})
+.catch(err => {
+    document.getElementById("results").innerHTML =
+        `<div class="empty">❌ Failed to load data. Check API.</div>`;
+    console.error(err);
 });
 
 }
 
-// refresh every 5 sec
+// auto refresh
 setInterval(loadData, 5000);
 loadData();
 
