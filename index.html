@@ -55,38 +55,32 @@
 
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec";
-fetch(sheetURL)
+fetch("https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec")
 .then(res => res.json())
-.then(votes => {
+.then(data => {
     const resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
 
-    for (let position in votes) {
+    for (let position in data) {
         let card = document.createElement("div");
         card.className = "card";
 
         let html = `<div class="position">${position}</div>`;
 
-        let maxVotes = 0;
-        let winner = "";
-
-        for (let name in votes[position]) {
-            if (votes[position][name] > maxVotes) {
-                maxVotes = votes[position][name];
-                winner = name;
-            }
-        }
-
-        for (let name in votes[position]) {
-            let isWinner = name === winner ? "winner" : "";
-            html += `<p class="${isWinner}">${name} - ${votes[position][name]} votes</p>`;
-        }
+        data[position].forEach(candidate => {
+            html += `
+                <p>
+                    ${candidate.name} - 
+                    ${candidate.votes} votes 
+                    (${candidate.percentage}%)
+                </p>
+            `;
+        });
 
         card.innerHTML = html;
         resultsDiv.appendChild(card);
     }
 });
 </script>
-
 </body>
 </html>
