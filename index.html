@@ -55,45 +55,18 @@
 
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec";
-
 fetch(sheetURL)
-.then(res => res.text())
-.then(data => {
-    const rows = data.trim().split("\n").map(r => r.split(","));
-    const headers = rows[0];
+.then(res => res.json())
+.then(votes => {
     const resultsDiv = document.getElementById("results");
-
-    let votes = {};
-
-    // Count votes
-    for (let i = 1; i < rows.length; i++) {
-        for (let j = 0; j < headers.length; j++) {
-            let candidate = rows[i][j]?.trim();
-
-            if (!candidate) continue;
-
-            if (!votes[headers[j]]) {
-                votes[headers[j]] = {};
-            }
-
-            if (!votes[headers[j]][candidate]) {
-                votes[headers[j]][candidate] = 0;
-            }
-
-            votes[headers[j]][candidate]++;
-        }
-    }
-
     resultsDiv.innerHTML = "";
 
-    // Display results
     for (let position in votes) {
         let card = document.createElement("div");
         card.className = "card";
 
         let html = `<div class="position">${position}</div>`;
 
-        // Find winner
         let maxVotes = 0;
         let winner = "";
 
@@ -112,10 +85,6 @@ fetch(sheetURL)
         card.innerHTML = html;
         resultsDiv.appendChild(card);
     }
-})
-.catch(err => {
-    document.getElementById("results").innerHTML = "Error loading data";
-    console.error(err);
 });
 </script>
 
