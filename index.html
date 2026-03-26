@@ -4,50 +4,81 @@
 <meta charset="UTF-8">
 <title>Voting Results</title>
 <style>
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.table th {
-    padding: 8px;
-    color: white;
-}
-
-.name-col { background: #343a40; }
-.vote-col { background: #007bff; }
-.percentage-col { background: #28a745; }
-
-.table td {
-    padding: 8px;
-    font-weight: bold;
-    color: white;
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 0;
     text-align: center;
+    color: #333;
+}
+
+h1 {
+    font-size: 36px;
+    margin: 20px 0;
+    color: #007BFF;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .position {
-    padding: 10px;
-    border-radius: 6px;
+    background: #87ceeb; /* sky blue */
     color: white;
-    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #87ceeb; /* sky blue header */
+    color: white;
+    font-size: 20px;
+    padding: 12px;
+}
+
+td {
+    padding: 12px;
+    font-size: 18px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #e6f7ff;
 }
 </style>
 </head>
 <body>
 
-<h1 style="text-align: center;">Voting Results</h1>
+<h1>Voting Results</h1>
 <div id="results">Loading...</div>
-<script>
 
+<script>
 const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
 
 function loadResults() {
-
     fetch(url)
     .then(response => response.json())
     .then(data => {
-
         const div = document.getElementById("results");
         div.innerHTML = "";
 
@@ -57,76 +88,39 @@ function loadResults() {
         }
 
         for (let position in data) {
-
             if (!Array.isArray(data[position])) continue;
 
             let card = document.createElement("div");
             card.className = "card";
 
-            // 🎨 ONE COLOR per position
-            let colors = ["#6f42c1", "#e83e8c", "#20c997", "#fd7e14", "#007bff"];
-            let posColor = colors[Math.floor(Math.random() * colors.length)];
+            let html = `<div class="position">${position}</div>`;
 
-            let html = `
-                <div class="position" style="background:${posColor}">
-                    ${position}
-                </div>
-            `;
-
-            // sort by votes
-            data[position].sort((a, b) => b.votes - a.votes);
-
-            // group same votes
-            let voteGroups = {};
-            data[position].forEach(c => {
-                if (!voteGroups[c.votes]) voteGroups[c.votes] = [];
-                voteGroups[c.votes].push(c);
-            });
-
-            let rankColors = [
-                "#28a745",
-                "#007bff",
-                "#ffc107",
-                "#fd7e14",
-                "#dc3545"
-            ];
-
-            let rankIndex = 0;
+            // Sort candidates by votes descending
+            data[position].sort((a,b) => b.votes - a.votes);
 
             html += `
-                <table class="table">
+                <table>
                     <tr>
-                        <th class="name-col">Candidate</th>
-                        <th class="vote-col">Votes</th>
-                        <th class="percentage-col">%</th>
+                        <th>Candidate Name</th>
+                        <th>Votes</th>
+                        <th>Percentage</th>
                     </tr>
             `;
 
-            Object.keys(voteGroups)
-                .sort((a, b) => b - a)
-                .forEach(vote => {
-
-                    let rowColor = rankColors[rankIndex] || "#6c757d";
-
-                    voteGroups[vote].forEach(c => {
-                        html += `
-                            <tr style="background:${rowColor}">
-                                <td>${c.name}</td>
-                                <td>${c.votes}</td>
-                                <td>${c.percentage}%</td>
-                            </tr>
-                        `;
-                    });
-
-                    rankIndex++;
-                });
+            data[position].forEach(c => {
+                html += `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>${c.votes}</td>
+                        <td>${c.percentage}%</td>
+                    </tr>
+                `;
+            });
 
             html += `</table>`;
-
             card.innerHTML = html;
             div.appendChild(card);
         }
-
     })
     .catch(err => {
         document.getElementById("results").innerHTML = "ERROR: " + err;
@@ -134,10 +128,10 @@ function loadResults() {
     });
 }
 
-// 🚀 Auto refresh every 5 seconds
+// Auto-refresh every 5 seconds
 loadResults();
 setInterval(loadResults, 5000);
-
 </script>
+
 </body>
 </html>
