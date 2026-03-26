@@ -52,20 +52,26 @@
 
 <h1>Voting Results</h1>
 <div id="results">Loading...</div>
-
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec";
-fetch("https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec")
+
+fetch(sheetURL)
 .then(res => res.json())
 .then(data => {
     const resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
 
     for (let position in data) {
+
+        if (!Array.isArray(data[position])) continue;
+
         let card = document.createElement("div");
         card.className = "card";
 
         let html = `<div class="position">${position}</div>`;
+
+        // Sort by highest votes
+        data[position].sort((a, b) => b.votes - a.votes);
 
         data[position].forEach(candidate => {
             html += `
@@ -80,6 +86,10 @@ fetch("https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpE
         card.innerHTML = html;
         resultsDiv.appendChild(card);
     }
+})
+.catch(err => {
+    document.getElementById("results").innerHTML = "Failed to load results";
+    console.error(err);
 });
 </script>
 </body>
