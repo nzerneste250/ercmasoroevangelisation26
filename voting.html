@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voting Results Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #0f172a;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background: #1e293b;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.container {
+    padding: 20px;
+}
+
+.card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #38bdf8;
+}
+
+canvas {
+    max-width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<header>📊 Voting Results Dashboard</header>
+
+<div class="container" id="results"></div>
+
+<script>
+
+// 🔴 REPLACE WITH YOUR GOOGLE SHEET CSV LINK
+const sheetURL = "YOUR_GOOGLE_SHEET_CSV_LINK_HERE";
+
+const positions = [
+"President",
+"Vice president",
+"Secretary & accountant",
+"Head of Christian",
+"Social affairs",
+"Intercessor",
+"Communication and sound engineer",
+"Advisor",
+"Chief usher",
+"Evangelist",
+"Leader of burakeye"
+];
+
+fetch(sheetURL)
+.then(res => res.text())
+.then(data => {
+
+    const rows = data.split("\n").map(r => r.split(","));
+    const headers = rows[0];
+
+    let container = document.getElementById("results");
+
+    positions.forEach(position => {
+
+        let index = headers.indexOf(position);
+        if(index === -1) return;
+
+        let votes = {};
+
+        for(let i = 1; i < rows.length; i++){
+            let candidate = rows[i][index];
+            if(candidate){
+                votes[candidate] = (votes[candidate] || 0) + 1;
+            }
+        }
+
+        let totalVotes = Object.values(votes).reduce((a,b)=>a+b,0);
+
+        let percentages = {};
+        for(let c in votes){
+            percentages[c] = ((votes[c] / totalVotes) * 100).toFixed(1);
+        }
+
+        // Create UI Card
+        let card = document.createElement("div");
+        card.className = "card";
+
+        let title = document.createElement("h2");
+        title.innerText = position;
+
+        let canvas = document.createElement("canvas");
+
+        card.appendChild(title);
+        card.appendChild(canvas);
+        container.appendChild(card);
+
+        // Chart
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(percentages),
+                datasets: [{
+                    label: "Vote %",
+                    data: Object.values(percentages),
+                    backgroundColor: "#38bdf8"
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+    });
+
+})
+.catch(err => console.error(err));
+
+</script>
+
+</body>
+</html>
