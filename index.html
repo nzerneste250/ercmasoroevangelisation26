@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>R.A.S.A INES Committee Voting Results: 2026-2027</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -12,20 +14,19 @@ body {
     color: #333;
 }
 
-/* HEADER */
+/* HEADER CENTERED */
 .header {
-    display: flex;
-    align-items: center;
     background: #87ceeb;
-    padding: 10px 20px;
+    text-align: center;
+    padding: 15px;
 }
 
 .header img {
-    height: 50px;
+    height: 60px;
 }
 
 .header h1 {
-    margin-left: 15px;
+    margin: 10px 0 0 0;
     color: white;
     font-size: 24px;
 }
@@ -45,11 +46,12 @@ body {
 .position {
     background: #87ceeb;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 /* TABLE */
@@ -67,33 +69,29 @@ th {
 
 td {
     padding: 10px;
-    text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
-/* BAR CHART */
-.bar-container {
-    width: 100%;
-    background: #e0e0e0;
-    border-radius: 5px;
-    height: 10px;
-    margin: 5px 0;
+/* ALIGN NAME LEFT */
+td.name {
+    text-align: left;
 }
 
-.bar {
-    height: 10px;
-    background: #007BFF;
-    border-radius: 5px;
+/* CHART */
+.chart-container {
+    width: 200px;
+    height: 200px;
+    margin: 15px auto;
 }
 </style>
 
 </head>
 <body>
 
-<!-- HEADER WITH LOGO -->
+<!-- HEADER CENTERED -->
 <div class="header">
     <img src="logo.png" alt="Logo">
-    <h1>R.A.S.A INES Committee Voting Results:2026 - 2027</h1>
+    <h1>R.A.S.A INES Committee Voting Results: 2026 - 2027</h1>
 </div>
 
 <div id="results">Loading...</div>
@@ -110,11 +108,6 @@ function loadResults() {
         const div = document.getElementById("results");
         div.innerHTML = "";
 
-        if (data.error) {
-            div.innerHTML = data.error;
-            return;
-        }
-
         for (let position in data) {
 
             if (!Array.isArray(data[position])) continue;
@@ -122,47 +115,68 @@ function loadResults() {
             let card = document.createElement("div");
             card.className = "card";
 
+            let chartId = "chart_" + position.replace(/\s+/g, "_");
+
             let html = `<div class="position">${position}</div>`;
 
-            // Sort candidates
+            // SORT BY VOTES
             data[position].sort((a,b) => b.votes - a.votes);
-
-            // Find max votes for chart scaling
-            let maxVotes = Math.max(...data[position].map(c => c.votes));
 
             html += `
                 <table>
                     <tr>
-                        <th>Name</th>
+                        <th style="text-align:left;">Name</th>
                         <th>Votes</th>
                         <th>Percentage</th>
                     </tr>
             `;
 
             data[position].forEach(c => {
-
-                let barWidth = (c.votes / maxVotes) * 100;
-
                 html += `
                     <tr>
-                        <td>${c.name}</td>
-                        <td>${c.votes}</td>
-                        <td>${c.percentage}%</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <div class="bar-container">
-                                <div class="bar" style="width:${barWidth}%"></div>
-                            </div>
-                        </td>
+                        <td class="name">${c.name}</td>
+                        <td style="text-align:center;">${c.votes}</td>
+                        <td style="text-align:center;">${c.percentage}%</td>
                     </tr>
                 `;
             });
 
             html += `</table>`;
 
+            // PIE CHART CONTAINER
+            html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
+
             card.innerHTML = html;
             div.appendChild(card);
+
+            // PIE CHART
+            let ctx = document.getElementById(chartId).getContext("2d");
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data[position].map(c => c.name),
+                    datasets: [{
+                        data: data[position].map(c => c.votes),
+                        backgroundColor: [
+                            "#007BFF",
+                            "#28a745",
+                            "#ffc107",
+                            "#dc3545",
+                            "#6f42c1",
+                            "#17a2b8"
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
         }
     })
     .catch(err => {
@@ -171,7 +185,7 @@ function loadResults() {
     });
 }
 
-// Auto refresh every 5 seconds
+// AUTO REFRESH
 loadResults();
 setInterval(loadResults, 5000);
 
