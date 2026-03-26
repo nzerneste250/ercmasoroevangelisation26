@@ -96,9 +96,8 @@ const positions = [
 ];
 
 function loadData() {
-
-fetch(sheetURL)
-.then(res => res.text())
+    fetch("https://script.google.com/macros/s/AKfycbzuvM0bqNzQ2PKrPvv3eDPz45mFvaSm0-eITT33VRZCILxfgZ4ZbZiz954boMeRk2AHuA/exec")
+.then(res => res.json())
 .then(data => {
 
     document.getElementById("results").innerHTML = "";
