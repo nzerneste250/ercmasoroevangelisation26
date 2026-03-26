@@ -16,7 +16,7 @@ body {
 
 /* HEADER CENTERED */
 .header {
-    background: #006dea;
+    background: #87ceeb;
     text-align: center;
     padding: 15px;
 }
@@ -28,30 +28,30 @@ body {
 .header h1 {
     margin: 10px 0 0 0;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
 }
 
 /* CARD */
 .card {
     background: white;
     border-radius: 10px;
-    width: 90%;
+    width: 95%;
     max-width: 900px;
     margin: 20px auto;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-/* POSITION TITLE */
+/* POSITION */
 .position {
-    background: #003f11;
+    background: #87ceeb;
     color: white;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     padding: 10px;
     border-radius: 6px;
-    margin-bottom: 15px;
     text-align: center;
+    margin-bottom: 10px;
 }
 
 /* TABLE */
@@ -63,34 +63,43 @@ table {
 th {
     background: #87ceeb;
     color: white;
-    padding: 10px;
-    font-size: 16px;
+    padding: 8px;
 }
 
 td {
-    padding: 10px;
+    padding: 8px;
     border-bottom: 1px solid #ddd;
 }
 
-/* ALIGN NAME LEFT */
 td.name {
     text-align: left;
 }
 
 /* CHART */
 .chart-container {
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    max-width: 250px;
     margin: 15px auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 18px;
+    }
+
+    th, td {
+        font-size: 14px;
+        padding: 6px;
+    }
 }
 </style>
 
 </head>
 <body>
 
-<!-- HEADER CENTERED -->
 <div class="header">
-    <img src="logo.png" alt="Logo">
+    <img src="logo.png">
     <h1>R.A.S.A INES Committee Voting Results: 2026 - 2027</h1>
 </div>
 
@@ -100,13 +109,18 @@ td.name {
 
 const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
 
+// Store chart instances
+let charts = {};
+let previousData = {};
+
 function loadResults() {
+
     fetch(url)
     .then(res => res.json())
     .then(data => {
 
-        const div = document.getElementById("results");
-        div.innerHTML = "";
+        const container = document.getElementById("results");
+        container.innerHTML = "";
 
         for (let position in data) {
 
@@ -119,8 +133,8 @@ function loadResults() {
 
             let html = `<div class="position">${position}</div>`;
 
-            // SORT BY VOTES
-            data[position].sort((a,b) => b.votes - a.votes);
+            // Sort
+            data[position].sort((a, b) => b.votes - a.votes);
 
             html += `
                 <table>
@@ -143,46 +157,67 @@ function loadResults() {
 
             html += `</table>`;
 
-            // PIE CHART CONTAINER
             html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
 
             card.innerHTML = html;
-            div.appendChild(card);
+            container.appendChild(card);
 
-            // PIE CHART
-            let ctx = document.getElementById(chartId).getContext("2d");
+            // Detect changes (IMPORTANT)
+            let currentVotes = data[position].map(c => c.votes).join(",");
 
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: data[position].map(c => c.name),
-                    datasets: [{
-                        data: data[position].map(c => c.votes),
-                        backgroundColor: [
-                            "#007BFF",
-                            "#28a745",
-                            "#ffc107",
-                            "#dc3545",
-                            "#6f42c1",
-                            "#17a2b8"
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
+            if (!charts[chartId]) {
+                // FIRST TIME → create chart
+                createChart(chartId, data[position]);
+                previousData[chartId] = currentVotes;
+            } else if (previousData[chartId] !== currentVotes) {
+                // ONLY UPDATE IF DATA CHANGED
+                updateChart(charts[chartId], data[position]);
+                previousData[chartId] = currentVotes;
+            }
         }
     })
-    .catch(err => {
-        document.getElementById("results").innerHTML = "ERROR: " + err;
-        console.error(err);
+    .catch(err => console.error(err));
+}
+
+// CREATE CHART
+function createChart(id, data) {
+    let ctx = document.getElementById(id).getContext("2d");
+
+    charts[id] = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: data.map(c => c.name),
+            datasets: [{
+                data: data.map(c => c.votes),
+                backgroundColor: generateColors(data.length)
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: false, // 🚫 NO MOVEMENT
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
     });
+}
+
+// UPDATE CHART WITHOUT RECREATING
+function updateChart(chart, data) {
+    chart.data.labels = data.map(c => c.name);
+    chart.data.datasets[0].data = data.map(c => c.votes);
+    chart.update();
+}
+
+// GENERATE COLORS
+function generateColors(count) {
+    let colors = [];
+    for (let i = 0; i < count; i++) {
+        colors.push(`hsl(${i * 360 / count}, 70%, 60%)`);
+    }
+    return colors;
 }
 
 // AUTO REFRESH
