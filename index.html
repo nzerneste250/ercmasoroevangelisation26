@@ -2,83 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Voting Results</title>
+<title>R.A.S.A INES Committee Voting Results: 2026-2027</title>
+
 <style>
 body {
     font-family: Arial, sans-serif;
     background: #f0f4f8;
     margin: 0;
-    padding: 0;
-    text-align: center;
     color: #333;
 }
 
-h1 {
-    font-size: 36px;
-    margin: 20px 0;
-    color: #007BFF;
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    background: #87ceeb;
+    padding: 10px 20px;
 }
 
+.header img {
+    height: 50px;
+}
+
+.header h1 {
+    margin-left: 15px;
+    color: white;
+    font-size: 24px;
+}
+
+/* CARD */
 .card {
     background: white;
     border-radius: 10px;
     width: 90%;
-    max-width: 800px;
+    max-width: 900px;
     margin: 20px auto;
     padding: 20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
+/* POSITION TITLE */
 .position {
-    background: #87ceeb; /* sky blue */
+    background: #87ceeb;
     color: white;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
-    padding: 15px;
+    padding: 10px;
     border-radius: 6px;
     margin-bottom: 15px;
 }
 
+/* TABLE */
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
 th {
-    background: #87ceeb; /* sky blue header */
+    background: #87ceeb;
     color: white;
-    font-size: 20px;
-    padding: 12px;
+    padding: 10px;
+    font-size: 16px;
 }
 
 td {
-    padding: 12px;
-    font-size: 18px;
+    padding: 10px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2;
+/* BAR CHART */
+.bar-container {
+    width: 100%;
+    background: #e0e0e0;
+    border-radius: 5px;
+    height: 10px;
+    margin: 5px 0;
 }
 
-tr:hover {
-    background-color: #e6f7ff;
+.bar {
+    height: 10px;
+    background: #007BFF;
+    border-radius: 5px;
 }
 </style>
+
 </head>
 <body>
 
-<h1>Voting Results</h1>
+<!-- HEADER WITH LOGO -->
+<div class="header">
+    <img src="logo.png" alt="Logo">
+    <h1>R.A.S.A INES Committee Voting Results: 2026-2027</h1>
+</div>
+
 <div id="results">Loading...</div>
 
 <script>
+
 const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
 
 function loadResults() {
     fetch(url)
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
+
         const div = document.getElementById("results");
         div.innerHTML = "";
 
@@ -88,6 +116,7 @@ function loadResults() {
         }
 
         for (let position in data) {
+
             if (!Array.isArray(data[position])) continue;
 
             let card = document.createElement("div");
@@ -95,29 +124,43 @@ function loadResults() {
 
             let html = `<div class="position">${position}</div>`;
 
-            // Sort candidates by votes descending
+            // Sort candidates
             data[position].sort((a,b) => b.votes - a.votes);
+
+            // Find max votes for chart scaling
+            let maxVotes = Math.max(...data[position].map(c => c.votes));
 
             html += `
                 <table>
                     <tr>
-                        <th>Candidate Name</th>
+                        <th>Name</th>
                         <th>Votes</th>
                         <th>Percentage</th>
                     </tr>
             `;
 
             data[position].forEach(c => {
+
+                let barWidth = (c.votes / maxVotes) * 100;
+
                 html += `
                     <tr>
                         <td>${c.name}</td>
                         <td>${c.votes}</td>
                         <td>${c.percentage}%</td>
                     </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="bar-container">
+                                <div class="bar" style="width:${barWidth}%"></div>
+                            </div>
+                        </td>
+                    </tr>
                 `;
             });
 
             html += `</table>`;
+
             card.innerHTML = html;
             div.appendChild(card);
         }
@@ -128,9 +171,10 @@ function loadResults() {
     });
 }
 
-// Auto-refresh every 5 seconds
+// Auto refresh every 5 seconds
 loadResults();
 setInterval(loadResults, 5000);
+
 </script>
 
 </body>
