@@ -5,46 +5,28 @@
 <title>Voting Results</title>
 
 <style>
-    body {
-        font-family: Arial;
-        background: linear-gradient(to right, #4facfe, #00f2fe);
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        color: white;
-    }
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    margin: 0;
+    text-align: center;
+    color: white;
+}
 
-    h1 {
-        padding: 20px;
-    }
+.card {
+    background: white;
+    color: black;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 600px;
+}
 
-    #results {
-        padding: 10px;
-    }
-
-    .card {
-        background: white;
-        color: black;
-        margin: 15px auto;
-        padding: 15px;
-        border-radius: 10px;
-        width: 85%;
-        max-width: 600px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        text-align: left;
-    }
-
-    .position {
-        font-size: 18px;
-        font-weight: bold;
-        color: #007BFF;
-        margin-bottom: 10px;
-    }
-
-    .winner {
-        color: rgb(255, 174, 0);
-        font-weight: bold;
-    }
+.position {
+    font-weight: bold;
+    color: #007BFF;
+}
 </style>
 
 </head>
@@ -52,45 +34,53 @@
 
 <h1>Voting Results</h1>
 <div id="results">Loading...</div>
-<script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzfm04kCQI0RpSECtStylcTvMaRcpEvpEvhP2Kkm_kJgH_VCV6NXYRg9y6bFq9zr_NlKA/exec";
 
-fetch(sheetURL)
-.then(res => res.json())
+<script>
+
+const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
+
+fetch(url)
+.then(response => response.json())
 .then(data => {
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
+
+    console.log("DATA:", data);
+
+    const div = document.getElementById("results");
+    div.innerHTML = "";
+
+    if (data.error) {
+        div.innerHTML = data.error;
+        return;
+    }
 
     for (let position in data) {
-
-        if (!Array.isArray(data[position])) continue;
 
         let card = document.createElement("div");
         card.className = "card";
 
         let html = `<div class="position">${position}</div>`;
 
-        // Sort by highest votes
+        // sort winners
         data[position].sort((a, b) => b.votes - a.votes);
 
-        data[position].forEach(candidate => {
+        data[position].forEach(c => {
             html += `
                 <p>
-                    ${candidate.name} - 
-                    ${candidate.votes} votes 
-                    (${candidate.percentage}%)
+                    ${c.name} - ${c.votes} votes (${c.percentage}%)
                 </p>
             `;
         });
 
         card.innerHTML = html;
-        resultsDiv.appendChild(card);
+        div.appendChild(card);
     }
 })
 .catch(err => {
-    document.getElementById("results").innerHTML = "Failed to load results";
+    document.getElementById("results").innerHTML = "ERROR: " + err;
     console.error(err);
 });
+
 </script>
+
 </body>
 </html>
