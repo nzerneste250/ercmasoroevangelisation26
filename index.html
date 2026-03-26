@@ -3,82 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Voting Dashboard</title>
+<title>Voting Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#0f172a,#020617);
+    font-family: Arial, sans-serif;
+    background: #0f172a;
     color: white;
 }
 
 header {
     text-align: center;
-    padding: 20px;
-    font-size: 26px;
-    font-weight: bold;
-    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    font-size: 22px;
+    background: #1e293b;
 }
 
 .container {
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(350px,1fr));
-    gap: 20px;
+    padding: 15px;
 }
 
 .card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
 h2 {
     color: #38bdf8;
+    font-size: 18px;
 }
 
 .winner {
-    margin: 10px 0;
     color: #4ade80;
+    font-size: 14px;
 }
 
 .rank {
-    font-size: 14px;
+    font-size: 13px;
     margin-top: 10px;
 }
 
-button {
-    margin-top: 10px;
-    padding: 8px;
-    border: none;
-    background: #38bdf8;
-    color: black;
-    border-radius: 5px;
+.toggle {
+    color: #38bdf8;
     cursor: pointer;
+    font-size: 13px;
+    margin-top: 10px;
+    display: inline-block;
 }
 
-.error {
-    text-align: center;
-    color: red;
-    font-weight: bold;
+.chart-box {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 10px;
+    display: none;
 }
 </style>
 </head>
 
 <body>
 
-<header>🚀 Live Voting Results Dashboard</header>
+<header>📊 Voting Results</header>
 
 <div class="container" id="results"></div>
 
 <script>
 
-// ✅ PUT YOUR APPS SCRIPT URL HERE
 const API_URL = "https://script.google.com/macros/s/AKfycbzuvM0bqNzQ2PKrPvv3eDPz45mFvaSm0-eITT33VRZCILxfgZ4ZbZiz954boMeRk2AHuA/exec";
+
+const positions = [
+"President",
+"Vice president",
+"Secretary & accountant",
+"Head of Christian",
+"Social affairs",
+"Intercessor",
+"Communication and sound engineer",
+"Advisor",
+"Chief usher",
+"Evangelist",
+"Leader of burakeye"
+];
 
 function loadData() {
 
@@ -89,111 +98,75 @@ fetch(API_URL)
     const container = document.getElementById("results");
     container.innerHTML = "";
 
-    Object.keys(data).forEach(position => {
+    positions.forEach(position => {
 
-        let info = data[position];
-        let candidates = info.candidates;
+        let info = data[position] || { candidates: [], winner: null };
+        let candidates = info.candidates || [];
 
-        // skip if no votes
-        if (!candidates || candidates.length === 0) return;
-
-        let labels = candidates.map(c => c.name);
-        let values = candidates.map(c => c.percent);
-
-        let winner = info.winner;
-
-        // Create card
         let card = document.createElement("div");
         card.className = "card";
 
         let title = `<h2>${position}</h2>`;
 
-        let winText = winner
-            ? `<div class="winner">🏆 Winner: ${winner.name} (${winner.percent}%)</div>`
-            : `<div class="winner">No winner yet</div>`;
+        let winnerText = info.winner
+            ? `<div class="winner">🏆 ${info.winner.name} (${info.winner.percent}%)</div>`
+            : `<div class="winner">No votes yet</div>`;
 
-        let rankList = candidates.map((c,i)=>
-            `${i+1}. ${c.name} - ${c.percent}%`
-        ).join("<br>");
+        // TEXT RESULTS (IMPORTANT)
+        let rankHTML = candidates.length > 0
+            ? candidates.map((c,i)=>
+                `${i+1}. ${c.name} — ${c.percent}%`
+              ).join("<br>")
+            : "No data";
 
-        let rankHTML = `<div class="rank">${rankList}</div>`;
+        let chartBox = document.createElement("div");
+        chartBox.className = "chart-box";
 
         let canvas = document.createElement("canvas");
+        chartBox.appendChild(canvas);
 
-        let btn = document.createElement("button");
-        btn.innerText = "Switch Chart";
+        let toggle = document.createElement("div");
+        toggle.className = "toggle";
+        toggle.innerText = "Show Chart";
 
-        let chartType = "bar";
-
-        card.innerHTML = title + winText + rankHTML;
-        card.appendChild(canvas);
-        card.appendChild(btn);
+        card.innerHTML = title + winnerText + `<div class="rank">${rankHTML}</div>`;
+        card.appendChild(toggle);
+        card.appendChild(chartBox);
 
         container.appendChild(card);
 
-        let chart = new Chart(canvas, {
-            type: chartType,
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: [
-                        "#38bdf8",
-                        "#facc15",
-                        "#f87171",
-                        "#4ade80",
-                        "#a78bfa",
-                        "#fb923c"
-                    ]
-                }]
-            },
-            options: {
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, max: 100 }
-                }
-            }
-        });
+        // Only create chart if data exists
+        if (candidates.length > 0) {
 
-        // toggle chart type
-        btn.onclick = () => {
-            chart.destroy();
-            chartType = chartType === "bar" ? "pie" : "bar";
-
-            chart = new Chart(canvas, {
-                type: chartType,
+            let chart = new Chart(canvas, {
+                type: 'pie',
                 data: {
-                    labels: labels,
+                    labels: candidates.map(c=>c.name),
                     datasets: [{
-                        data: values,
-                        backgroundColor: [
-                            "#38bdf8",
-                            "#facc15",
-                            "#f87171",
-                            "#4ade80",
-                            "#a78bfa",
-                            "#fb923c"
-                        ]
+                        data: candidates.map(c=>c.percent)
                     }]
                 }
             });
-        };
+
+            toggle.onclick = () => {
+                if (chartBox.style.display === "none") {
+                    chartBox.style.display = "block";
+                    toggle.innerText = "Hide Chart";
+                } else {
+                    chartBox.style.display = "none";
+                    toggle.innerText = "Show Chart";
+                }
+            };
+        }
 
     });
 
-})
-.catch(err => {
-    document.getElementById("results").innerHTML =
-        `<div class="error">❌ Failed to load data. Check API or deployment.</div>`;
-    console.error(err);
 });
 
 }
 
-// auto refresh every 5 seconds
+// refresh every 5 sec
 setInterval(loadData, 5000);
-
-// first load
 loadData();
 
 </script>
