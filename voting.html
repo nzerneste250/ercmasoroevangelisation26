@@ -3,58 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Voting Results Dashboard</title>
+<title>Advanced Voting Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    background: #0f172a;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f172a,#020617);
     color: white;
 }
 
 header {
     text-align: center;
     padding: 20px;
-    background: #1e293b;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
 }
 
 .container {
     padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(350px,1fr));
+    gap: 20px;
 }
 
 .card {
-    background: #1e293b;
-    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
     padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 h2 {
-    margin-bottom: 15px;
     color: #38bdf8;
 }
 
-canvas {
-    max-width: 100%;
+.winner {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #4ade80;
+}
+
+.rank {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    background: #38bdf8;
+    color: black;
+    border-radius: 6px;
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<header>📊 Voting Results Dashboard</header>
+<header>🚀 Live Voting Results Dashboard</header>
 
 <div class="container" id="results"></div>
 
 <script>
 
-// 🔴 REPLACE WITH YOUR GOOGLE SHEET CSV LINK
 const sheetURL = "YOUR_GOOGLE_SHEET_CSV_LINK_HERE";
 
 const positions = [
@@ -71,14 +95,16 @@ const positions = [
 "Leader of burakeye"
 ];
 
+function loadData() {
+
 fetch(sheetURL)
 .then(res => res.text())
 .then(data => {
 
+    document.getElementById("results").innerHTML = "";
+
     const rows = data.split("\n").map(r => r.split(","));
     const headers = rows[0];
-
-    let container = document.getElementById("results");
 
     positions.forEach(position => {
 
@@ -87,61 +113,97 @@ fetch(sheetURL)
 
         let votes = {};
 
-        for(let i = 1; i < rows.length; i++){
-            let candidate = rows[i][index];
-            if(candidate){
-                votes[candidate] = (votes[candidate] || 0) + 1;
+        for(let i=1;i<rows.length;i++){
+            let c = rows[i][index];
+            if(c){
+                votes[c] = (votes[c] || 0) + 1;
             }
         }
 
-        let totalVotes = Object.values(votes).reduce((a,b)=>a+b,0);
+        let total = Object.values(votes).reduce((a,b)=>a+b,0);
 
-        let percentages = {};
-        for(let c in votes){
-            percentages[c] = ((votes[c] / totalVotes) * 100).toFixed(1);
-        }
+        let sorted = Object.entries(votes)
+        .map(([name,count]) => ({
+            name,
+            percent: ((count/total)*100).toFixed(1)
+        }))
+        .sort((a,b)=>b.percent - a.percent);
 
-        // Create UI Card
+        let labels = sorted.map(x=>x.name);
+        let values = sorted.map(x=>x.percent);
+
+        let winner = sorted[0];
+
+        // UI
         let card = document.createElement("div");
         card.className = "card";
 
-        let title = document.createElement("h2");
-        title.innerText = position;
+        let title = `<h2>${position}</h2>`;
+        let winText = `<div class="winner">🏆 Winner: ${winner.name} (${winner.percent}%)</div>`;
+
+        let rankList = sorted.map((x,i)=>
+            `${i+1}. ${x.name} - ${x.percent}%`
+        ).join("<br>");
+
+        let rankHTML = `<div class="rank">${rankList}</div>`;
 
         let canvas = document.createElement("canvas");
 
-        card.appendChild(title);
-        card.appendChild(canvas);
-        container.appendChild(card);
+        let btn = document.createElement("button");
+        btn.innerText = "Switch Chart";
 
-        // Chart
-        new Chart(canvas, {
-            type: 'bar',
+        let chartType = "bar";
+
+        card.innerHTML = title + winText + rankHTML;
+        card.appendChild(canvas);
+        card.appendChild(btn);
+
+        document.getElementById("results").appendChild(card);
+
+        let chart = new Chart(canvas, {
+            type: chartType,
             data: {
-                labels: Object.keys(percentages),
+                labels: labels,
                 datasets: [{
-                    label: "Vote %",
-                    data: Object.values(percentages),
-                    backgroundColor: "#38bdf8"
+                    data: values,
+                    backgroundColor: ["#38bdf8","#facc15","#f87171","#4ade80","#a78bfa"]
                 }]
             },
             options: {
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+                    y: { beginAtZero:true, max:100 }
                 }
             }
         });
 
+        btn.onclick = () => {
+            chart.destroy();
+            chartType = chartType === "bar" ? "pie" : "bar";
+
+            chart = new Chart(canvas, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ["#38bdf8","#facc15","#f87171","#4ade80","#a78bfa"]
+                    }]
+                }
+            });
+        };
+
     });
 
-})
-.catch(err => console.error(err));
+});
+
+}
+
+// 🔄 Auto refresh every 5 seconds
+setInterval(loadData, 5000);
+
+// first load
+loadData();
 
 </script>
 
