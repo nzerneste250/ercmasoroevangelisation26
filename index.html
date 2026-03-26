@@ -54,6 +54,17 @@ body {
     margin-bottom: 10px;
 }
 
+/* TOTAL VOTES */
+.total-votes {
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    background: #004f01;
+    padding: 8px;
+    border-radius: 6px;
+}
+
 /* TABLE */
 table {
     width: 100%;
@@ -81,34 +92,52 @@ td.name {
     max-width: 250px;
     margin: 15px auto;
 }
+
+/* FOOTER */
 .footer {
     text-align: center;
     padding: 15px;
-    background:#195ef4;
+    background: #195ef4;
     color: white;
     font-size: 14px;
     margin-top: 30px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    th, td {
+        font-size: 13px;
+        padding: 6px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
 }
 </style>
 
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
     <img src="logo.png">
     <h1>R.A.S.A INES Committee Voting Results: 2026 - 2027</h1>
 </div>
 
 <div id="results"></div>
+
+<!-- FOOTER -->
 <div class="footer">
     © 2026 @nzernest250. All Rights Reserved.
 </div>
+
 <script>
 
 const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
 
-let charts = {};      // store charts
-let dataStore = {};   // store last data
+let charts = {};
+let dataStore = {};
 
 function init() {
     fetch(url)
@@ -117,7 +146,7 @@ function init() {
 
         const container = document.getElementById("results");
 
-        // ❗ ONLY CREATE UI ONCE
+        // CREATE UI ONLY ONCE
         if (Object.keys(charts).length === 0) {
             container.innerHTML = "";
 
@@ -130,6 +159,14 @@ function init() {
 
                 let html = `<div class="position">${position}</div>`;
 
+                // Sort by votes
+                data[position].sort((a, b) => b.votes - a.votes);
+
+                // Total votes
+                let totalVotes = data[position].reduce((sum, c) => sum + Number(c.votes), 0);
+
+                html += `<div class="total-votes">Total Votes: ${totalVotes}</div>`;
+
                 html += `
                     <table>
                         <tr>
@@ -138,8 +175,6 @@ function init() {
                             <th>Percentage</th>
                         </tr>
                 `;
-
-                data[position].sort((a,b) => b.votes - a.votes);
 
                 data[position].forEach(c => {
                     html += `
@@ -152,6 +187,7 @@ function init() {
                 });
 
                 html += `</table>`;
+
                 html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
 
                 card.innerHTML = html;
@@ -159,19 +195,19 @@ function init() {
 
                 // CREATE CHART
                 charts[chartId] = createChart(chartId, data[position]);
+
                 dataStore[chartId] = data[position].map(c => c.votes).join(",");
             }
 
         } else {
-            // ❗ ONLY UPDATE DATA (NO HTML CHANGE)
 
+            // UPDATE ONLY DATA
             for (let position in data) {
 
                 let chartId = "chart_" + position.replace(/\s+/g, "_");
 
                 let newVotes = data[position].map(c => c.votes).join(",");
 
-                // Update only if changed
                 if (dataStore[chartId] !== newVotes) {
 
                     let chart = charts[chartId];
@@ -185,6 +221,7 @@ function init() {
                 }
             }
         }
+
     })
     .catch(err => console.error(err));
 }
@@ -205,7 +242,7 @@ function createChart(id, data) {
         },
         options: {
             responsive: true,
-            animation: false, // no movement
+            animation: false,
             plugins: {
                 legend: {
                     position: 'bottom'
