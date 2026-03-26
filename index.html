@@ -14,9 +14,9 @@ body {
     color: #333;
 }
 
-/* HEADER CENTERED */
+/* HEADER */
 .header {
-    background: #87ceeb;
+    background: #0034a3;
     text-align: center;
     padding: 15px;
 }
@@ -26,9 +26,9 @@ body {
 }
 
 .header h1 {
-    margin: 10px 0 0 0;
     color: white;
     font-size: 22px;
+    margin: 10px 0 0 0;
 }
 
 /* CARD */
@@ -44,7 +44,7 @@ body {
 
 /* POSITION */
 .position {
-    background: #87ceeb;
+    background: #004f01;
     color: white;
     font-size: 20px;
     font-weight: bold;
@@ -81,18 +81,6 @@ td.name {
     max-width: 250px;
     margin: 15px auto;
 }
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 18px;
-    }
-
-    th, td {
-        font-size: 14px;
-        padding: 6px;
-    }
-}
 </style>
 
 </head>
@@ -103,76 +91,88 @@ td.name {
     <h1>R.A.S.A INES Committee Voting Results: 2026 - 2027</h1>
 </div>
 
-<div id="results">Loading...</div>
+<div id="results"></div>
 
 <script>
 
 const url = "https://script.google.com/macros/s/AKfycbzOLSyPusBH6HvFc09lyagJa8crPS5I9zGs3OGeUfRvgDnlwXbcoyppYs_JApkMdC4ezQ/exec";
 
-// Store chart instances
-let charts = {};
-let previousData = {};
+let charts = {};      // store charts
+let dataStore = {};   // store last data
 
-function loadResults() {
-
+function init() {
     fetch(url)
     .then(res => res.json())
     .then(data => {
 
         const container = document.getElementById("results");
-        container.innerHTML = "";
 
-        for (let position in data) {
+        // ❗ ONLY CREATE UI ONCE
+        if (Object.keys(charts).length === 0) {
+            container.innerHTML = "";
 
-            if (!Array.isArray(data[position])) continue;
+            for (let position in data) {
 
-            let card = document.createElement("div");
-            card.className = "card";
+                let card = document.createElement("div");
+                card.className = "card";
 
-            let chartId = "chart_" + position.replace(/\s+/g, "_");
+                let chartId = "chart_" + position.replace(/\s+/g, "_");
 
-            let html = `<div class="position">${position}</div>`;
+                let html = `<div class="position">${position}</div>`;
 
-            // Sort
-            data[position].sort((a, b) => b.votes - a.votes);
-
-            html += `
-                <table>
-                    <tr>
-                        <th style="text-align:left;">Name</th>
-                        <th>Votes</th>
-                        <th>Percentage</th>
-                    </tr>
-            `;
-
-            data[position].forEach(c => {
                 html += `
-                    <tr>
-                        <td class="name">${c.name}</td>
-                        <td style="text-align:center;">${c.votes}</td>
-                        <td style="text-align:center;">${c.percentage}%</td>
-                    </tr>
+                    <table>
+                        <tr>
+                            <th style="text-align:left;">Name</th>
+                            <th>Votes</th>
+                            <th>Percentage</th>
+                        </tr>
                 `;
-            });
 
-            html += `</table>`;
+                data[position].sort((a,b) => b.votes - a.votes);
 
-            html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
+                data[position].forEach(c => {
+                    html += `
+                        <tr>
+                            <td class="name">${c.name}</td>
+                            <td style="text-align:center;">${c.votes}</td>
+                            <td style="text-align:center;">${c.percentage}%</td>
+                        </tr>
+                    `;
+                });
 
-            card.innerHTML = html;
-            container.appendChild(card);
+                html += `</table>`;
+                html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
 
-            // Detect changes (IMPORTANT)
-            let currentVotes = data[position].map(c => c.votes).join(",");
+                card.innerHTML = html;
+                container.appendChild(card);
 
-            if (!charts[chartId]) {
-                // FIRST TIME → create chart
-                createChart(chartId, data[position]);
-                previousData[chartId] = currentVotes;
-            } else if (previousData[chartId] !== currentVotes) {
-                // ONLY UPDATE IF DATA CHANGED
-                updateChart(charts[chartId], data[position]);
-                previousData[chartId] = currentVotes;
+                // CREATE CHART
+                charts[chartId] = createChart(chartId, data[position]);
+                dataStore[chartId] = data[position].map(c => c.votes).join(",");
+            }
+
+        } else {
+            // ❗ ONLY UPDATE DATA (NO HTML CHANGE)
+
+            for (let position in data) {
+
+                let chartId = "chart_" + position.replace(/\s+/g, "_");
+
+                let newVotes = data[position].map(c => c.votes).join(",");
+
+                // Update only if changed
+                if (dataStore[chartId] !== newVotes) {
+
+                    let chart = charts[chartId];
+
+                    chart.data.labels = data[position].map(c => c.name);
+                    chart.data.datasets[0].data = data[position].map(c => c.votes);
+
+                    chart.update();
+
+                    dataStore[chartId] = newVotes;
+                }
             }
         }
     })
@@ -181,9 +181,10 @@ function loadResults() {
 
 // CREATE CHART
 function createChart(id, data) {
+
     let ctx = document.getElementById(id).getContext("2d");
 
-    charts[id] = new Chart(ctx, {
+    return new Chart(ctx, {
         type: 'pie',
         data: {
             labels: data.map(c => c.name),
@@ -194,7 +195,7 @@ function createChart(id, data) {
         },
         options: {
             responsive: true,
-            animation: false, // 🚫 NO MOVEMENT
+            animation: false, // no movement
             plugins: {
                 legend: {
                     position: 'bottom'
@@ -204,14 +205,7 @@ function createChart(id, data) {
     });
 }
 
-// UPDATE CHART WITHOUT RECREATING
-function updateChart(chart, data) {
-    chart.data.labels = data.map(c => c.name);
-    chart.data.datasets[0].data = data.map(c => c.votes);
-    chart.update();
-}
-
-// GENERATE COLORS
+// COLORS
 function generateColors(count) {
     let colors = [];
     for (let i = 0; i < count; i++) {
@@ -220,9 +214,9 @@ function generateColors(count) {
     return colors;
 }
 
-// AUTO REFRESH
-loadResults();
-setInterval(loadResults, 5000);
+// INIT + AUTO REFRESH
+init();
+setInterval(init, 5000);
 
 </script>
 
