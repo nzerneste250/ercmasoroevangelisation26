@@ -18,10 +18,9 @@ body {
 header {
     text-align: center;
     padding: 20px;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
 }
 
 .container {
@@ -35,13 +34,7 @@ header {
     background: rgba(255,255,255,0.05);
     border-radius: 15px;
     padding: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 h2 {
@@ -50,7 +43,6 @@ h2 {
 
 .winner {
     margin: 10px 0;
-    font-size: 16px;
     color: #4ade80;
 }
 
@@ -61,87 +53,67 @@ h2 {
 
 button {
     margin-top: 10px;
-    padding: 8px 12px;
+    padding: 8px;
     border: none;
     background: #38bdf8;
     color: black;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    font-weight: bold;
 }
 </style>
 </head>
 
 <body>
 
-<header>Live Voting Results Dashboard</header>
+<header>🚀 Live Voting Results Dashboard</header>
 
 <div class="container" id="results"></div>
 
 <script>
 
-const sheetURL = "https://script.google.com/macros/s/AKfycbzuvM0bqNzQ2PKrPvv3eDPz45mFvaSm0-eITT33VRZCILxfgZ4ZbZiz954boMeRk2AHuA/exec";
-
-const positions = [
-"President",
-"Vice president",
-"Secretary & accountant",
-"Head of Christian",
-"Social affairs",
-"Intercessor",
-"Communication and sound engineer",
-"Advisor",
-"Chief usher",
-"Evangelist",
-"Leader of burakeye"
-];
+// ✅ PUT YOUR APPS SCRIPT URL HERE
+const API_URL = "https://script.google.com/macros/s/AKfycbzuvM0bqNzQ2PKrPvv3eDPz45mFvaSm0-eITT33VRZCILxfgZ4ZbZiz954boMeRk2AHuA/exec";
 
 function loadData() {
-    fetch("https://script.google.com/macros/s/AKfycbzuvM0bqNzQ2PKrPvv3eDPz45mFvaSm0-eITT33VRZCILxfgZ4ZbZiz954boMeRk2AHuA/exec")
+
+fetch(API_URL)
 .then(res => res.json())
 .then(data => {
 
-    document.getElementById("results").innerHTML = "";
+    const container = document.getElementById("results");
+    container.innerHTML = "";
 
-    const rows = data.split("\n").map(r => r.split(","));
-    const headers = rows[0];
+    Object.keys(data).forEach(position => {
 
-    positions.forEach(position => {
+        let info = data[position];
+        let candidates = info.candidates;
 
-        let index = headers.indexOf(position);
-        if(index === -1) return;
+        // skip if no votes
+        if (!candidates || candidates.length === 0) return;
 
-        let votes = {};
+        let labels = candidates.map(c => c.name);
+        let values = candidates.map(c => c.percent);
 
-        for(let i=1;i<rows.length;i++){
-            let c = rows[i][index];
-            if(c){
-                votes[c] = (votes[c] || 0) + 1;
-            }
-        }
+        let winner = info.winner;
 
-        let total = Object.values(votes).reduce((a,b)=>a+b,0);
-
-        let sorted = Object.entries(votes)
-        .map(([name,count]) => ({
-            name,
-            percent: ((count/total)*100).toFixed(1)
-        }))
-        .sort((a,b)=>b.percent - a.percent);
-
-        let labels = sorted.map(x=>x.name);
-        let values = sorted.map(x=>x.percent);
-
-        let winner = sorted[0];
-
-        // UI
+        // Create card
         let card = document.createElement("div");
         card.className = "card";
 
         let title = `<h2>${position}</h2>`;
-        let winText = `<div class="winner">🏆 Winner: ${winner.name} (${winner.percent}%)</div>`;
 
-        let rankList = sorted.map((x,i)=>
-            `${i+1}. ${x.name} - ${x.percent}%`
+        let winText = winner
+            ? `<div class="winner">🏆 Winner: ${winner.name} (${winner.percent}%)</div>`
+            : `<div class="winner">No winner yet</div>`;
+
+        let rankList = candidates.map((c,i)=>
+            `${i+1}. ${c.name} - ${c.percent}%`
         ).join("<br>");
 
         let rankHTML = `<div class="rank">${rankList}</div>`;
@@ -157,7 +129,7 @@ function loadData() {
         card.appendChild(canvas);
         card.appendChild(btn);
 
-        document.getElementById("results").appendChild(card);
+        container.appendChild(card);
 
         let chart = new Chart(canvas, {
             type: chartType,
@@ -165,17 +137,25 @@ function loadData() {
                 labels: labels,
                 datasets: [{
                     data: values,
-                    backgroundColor: ["#38bdf8","#facc15","#f87171","#4ade80","#a78bfa"]
+                    backgroundColor: [
+                        "#38bdf8",
+                        "#facc15",
+                        "#f87171",
+                        "#4ade80",
+                        "#a78bfa",
+                        "#fb923c"
+                    ]
                 }]
             },
             options: {
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero:true, max:100 }
+                    y: { beginAtZero: true, max: 100 }
                 }
             }
         });
 
+        // toggle chart type
         btn.onclick = () => {
             chart.destroy();
             chartType = chartType === "bar" ? "pie" : "bar";
@@ -186,7 +166,14 @@ function loadData() {
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: ["#38bdf8","#facc15","#f87171","#4ade80","#a78bfa"]
+                        backgroundColor: [
+                            "#38bdf8",
+                            "#facc15",
+                            "#f87171",
+                            "#4ade80",
+                            "#a78bfa",
+                            "#fb923c"
+                        ]
                     }]
                 }
             });
@@ -194,11 +181,16 @@ function loadData() {
 
     });
 
+})
+.catch(err => {
+    document.getElementById("results").innerHTML =
+        `<div class="error">❌ Failed to load data. Check API or deployment.</div>`;
+    console.error(err);
 });
 
 }
 
-// 🔄 Auto refresh every 5 seconds
+// auto refresh every 5 seconds
 setInterval(loadData, 5000);
 
 // first load
