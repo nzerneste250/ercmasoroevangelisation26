@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voting Results Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* GENERAL */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #d9e4f5);
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    text-align: center;
+    padding: 20px;
+    color: white;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 22px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* POSITION */
+.position {
+    background: #2a5298;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* TOTAL */
+.total {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #2a5298;
+    color: white;
+    padding: 8px;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+td.name {
+    text-align: left;
+}
+
+/* WINNER */
+.winner {
+    font-weight: bold;
+    color: green;
+}
+
+/* CHART */
+.chart-container {
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: #1e3c72;
+    color: white;
+}
+
+/* MOBILE */
+@media (max-width:600px){
+    th, td {
+        font-size: 12px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>R.A.S.A INES Voting Results 2026 - 2027</h1>
+</div>
+
+<div id="results"></div>
+
+<div class="footer">
+    © 2026 nzernest250
+</div>
+
+<script>
+
+// 🔴 PUT YOUR APPS SCRIPT URL HERE
+const url = "https://script.google.com/macros/s/AKfycbysh5y3Nl52TwuYKHo7ny5FybpXKdHBNmHCPHPLI-KaTAZ438cHzm1A6m3xwBTXbYbeIQ/exec";
+
+let charts = {};
+let cache = {};
+
+function loadData() {
+
+    fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+        const container = document.getElementById("results");
+
+        if (Object.keys(charts).length === 0) {
+
+            container.innerHTML = "";
+
+            for (let position in data) {
+
+                let card = document.createElement("div");
+                card.className = "card";
+
+                let chartId = "chart_" + position.replace(/\s+/g, "_");
+
+                data[position].sort((a,b)=>b.votes-a.votes);
+
+                let total = data[position].reduce((s,c)=>s+Number(c.votes),0);
+
+                let html = `
+                    <div class="position">${position}</div>
+                    <div class="total">Total Votes: ${total}</div>
+
+                    <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Votes</th>
+                        <th>%</th>
+                    </tr>
+                `;
+
+                data[position].forEach((c,i)=>{
+                    html += `
+                    <tr class="${i===0 ? 'winner':''}">
+                        <td class="name">${c.name}</td>
+                        <td align="center">${c.votes}</td>
+                        <td align="center">${c.percentage}%</td>
+                    </tr>`;
+                });
+
+                html += `</table>`;
+                html += `<div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
+
+                card.innerHTML = html;
+                container.appendChild(card);
+
+                charts[chartId] = createChart(chartId, data[position]);
+                cache[chartId] = data[position].map(c=>c.votes).join(",");
+            }
+
+        } else {
+
+            for (let position in data) {
+
+                let chartId = "chart_" + position.replace(/\s+/g, "_");
+                let newVotes = data[position].map(c=>c.votes).join(",");
+
+                if (cache[chartId] !== newVotes) {
+
+                    let chart = charts[chartId];
+
+                    chart.data.labels = data[position].map(c=>c.name);
+                    chart.data.datasets[0].data = data[position].map(c=>c.votes);
+
+                    chart.update();
+                    cache[chartId] = newVotes;
+                }
+            }
+        }
+
+    })
+    .catch(err => console.error(err));
+}
+
+// CHART
+function createChart(id,data){
+
+    return new Chart(document.getElementById(id),{
+        type:"doughnut",
+        data:{
+            labels:data.map(c=>c.name),
+            datasets:[{
+                data:data.map(c=>c.votes),
+                backgroundColor: colors(data.length)
+            }]
+        },
+        options:{
+            responsive:true,
+            cutout:"60%",
+            plugins:{
+                legend:{position:"bottom"}
+            }
+        }
+    });
+}
+
+// COLORS
+function colors(n){
+    const palette = ["#4CAF50","#2196F3","#FF9800","#E91E63","#9C27B0","#00BCD4","#FFC107"];
+    return Array.from({length:n},(_,i)=>palette[i%palette.length]);
+}
+
+// AUTO REFRESH
+loadData();
+setInterval(loadData,5000);
+
+</script>
+
+</body>
+</html>
