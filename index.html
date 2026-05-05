@@ -4,197 +4,213 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ERC Masoro Evangelism Ministry</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --primary:#7b1e2b;
-  --accent:#d4af37;
-  --dark:#111;
+  --primary:#8b1e2d;
+  --secondary:#a32434;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Poppins',sans-serif;background:#f8f8f8;color:#333}
-
-/* NAVBAR */
-header{background:transparent;position:fixed;width:100%;z-index:1000;transition:0.3s}
-header.scrolled{background:rgba(0,0,0,0.85)}
-nav{display:flex;justify-content:space-between;align-items:center;padding:15px 40px}
-nav h2{color:white}
-nav ul{list-style:none;display:flex;gap:25px}
-nav ul li a{color:white;text-decoration:none;font-weight:500}
-nav ul li a:hover{color:var(--accent)}
-
-/* HERO */
-.hero{
-  height:100vh;
-  background:url('https://images.unsplash.com/photo-1507692049790-de58290a4334') center/cover no-repeat;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:white;
-  position:relative;
+*{box-sizing:border-box}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+}
+header {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+nav {
+    background: var(--secondary);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+nav a {
+    color: white;
+    padding: 15px 20px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+nav a:hover {
+    background: #6d1723;
+}
+.hero {
+    background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d') no-repeat center/cover;
+    color: white;
+    text-align: center;
+    padding: 120px 20px;
+    position: relative;
 }
 .hero::after{
   content:'';
   position:absolute;
-  width:100%;height:100%;
-  background:rgba(0,0,0,0.6);
+  top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.5);
 }
-.hero-content{position:relative;z-index:1;animation:fadeIn 2s}
-.hero h1{font-size:55px;margin-bottom:10px}
-.hero p{font-size:18px;margin-bottom:20px}
-.hero button{
-  padding:14px 30px;
-  background:var(--accent);
-  border:none;
-  color:black;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:30px;
+.hero-content{
+  position:relative;
+  z-index:1;
+  animation: fadeIn 2s ease;
 }
-.hero button:hover{background:white}
-
-/* SECTIONS */
-.section{padding:80px 20px;text-align:center}
-.section h2{color:var(--primary);margin-bottom:20px}
-
-/* CARDS */
-.cards{display:flex;gap:30px;flex-wrap:wrap;justify-content:center}
-.card{
-  background:white;
-  width:280px;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.1);
-  transition:0.4s;
+.hero h1 {
+    font-size: 42px;
 }
-.card img{width:100%;border-radius:10px;margin-bottom:15px}
-.card:hover{transform:translateY(-10px)}
-
-/* EVENTS */
-.events{background:#fff}
-.event-box{
-  background:#f1f1f1;
-  margin:10px auto;
-  padding:15px;
-  max-width:500px;
-  border-left:5px solid var(--primary);
+.section {
+    padding: 50px 20px;
+    text-align: center;
+}
+.section h2 {
+    color: var(--primary);
+}
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.card {
+    background: white;
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.card:hover{
+  transform: translateY(-10px);
+}
+footer {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+button:hover {
+    background: #6d1723;
 }
 
-/* CONTACT */
-.contact-form input,.contact-form textarea{
-  width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ccc
-}
-.contact-form button{
-  background:var(--primary);
-  color:white;
-  padding:12px 20px;
-  border:none;border-radius:8px
+/* Animations */
+@keyframes fadeIn{
+  from{opacity:0; transform: translateY(20px);} 
+  to{opacity:1; transform: translateY(0);} 
 }
 
-/* FOOTER */
-footer{background:#111;color:white;text-align:center;padding:20px}
+.reveal{
+  opacity:0;
+  transform: translateY(40px);
+  transition: 0.6s ease;
+}
+.reveal.active{
+  opacity:1;
+  transform: translateY(0);
+}
 
-/* ANIMATION */
-@keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1}}
-
-/* RESPONSIVE */
+/* Responsive */
 @media(max-width:768px){
-  nav ul{display:none;flex-direction:column;background:black;position:absolute;top:60px;right:0;width:200px}
-  nav ul.active{display:flex}
-  .menu-toggle{display:block;color:white;font-size:25px;cursor:pointer}
-  .hero h1{font-size:30px}
+  .hero h1{font-size:28px}
+  .cards{flex-direction:column; align-items:center}
+  nav{flex-direction:column}
 }
-.menu-toggle{display:none}
 </style>
 </head>
 <body>
 
-<header id="header">
-  <nav>
-    <h2>ERC Masoro</h2>
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    <ul id="menu">
-      <li><a href="#">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#events">Events</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
+<header>
+    <h1>ERC Masoro Evangelism Ministry</h1>
+    <p>Evangelical Restoration Church Rwanda</p>
 </header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#help">Help</a>
+    <a href="#contact">Contact</a>
+    <a href="login.html">Login</a>
+</nav>
 
 <section class="hero">
   <div class="hero-content">
-    <h1>Experience God’s Presence</h1>
-    <p>Welcome to a place of worship, love, and transformation</p>
-    <button onclick="scrollToSection('about')">Discover More</button>
+    <h1>Walking in the Light</h1>
+    <p>Join us in worship, fellowship, and spiritual growth</p>
+    <button onclick="scrollToSection('about')">Join Us</button>
   </div>
 </section>
 
-<section id="about" class="section">
-  <h2>About Our Church</h2>
-  <p>We are a vibrant Christian community committed to faith, worship, and impacting lives through Jesus Christ.</p>
+<section id="about" class="section reveal">
+    <h2>About Us</h2>
+    <p>We are a community dedicated to spreading the Gospel, building faith, and serving others through Christ.</p>
 </section>
 
-<section id="services" class="section">
-  <h2>Our Ministries</h2>
-  <div class="cards">
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df">
-      <h3>Worship Service</h3>
-      <p>Sunday powerful worship and preaching.</p>
+<section id="services" class="section reveal">
+    <h2>Our Services</h2>
+    <div class="cards">
+        <div class="card">
+            <h3>Sunday Worship</h3>
+            <p>Join us every Sunday for powerful worship and teaching.</p>
+        </div>
+        <div class="card">
+            <h3>Youth Ministry</h3>
+            <p>Empowering young people to grow spiritually.</p>
+        </div>
+        <div class="card">
+            <h3>Community Outreach</h3>
+            <p>Helping and serving the community with love.</p>
+        </div>
     </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d">
-      <h3>Youth Ministry</h3>
-      <p>Building strong young believers.</p>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1515169067865-5387ec356754">
-      <h3>Outreach</h3>
-      <p>Serving community with love.</p>
-    </div>
-  </div>
 </section>
 
-<section id="events" class="section events">
-  <h2>Upcoming Events</h2>
-  <div class="event-box">Sunday Service - 10:00 AM</div>
-  <div class="event-box">Youth Fellowship - Saturday</div>
+<section id="help" class="section reveal">
+    <h2>Need Help?</h2>
+    <p>If you need prayers, counseling, or support, feel free to reach out.</p>
+    <button onclick="alert('Request sent! We will contact you.')">Request Help</button>
 </section>
 
-<section id="contact" class="section">
-  <h2>Contact Us</h2>
-  <div class="contact-form">
-    <input type="text" placeholder="Your Name">
-    <input type="email" placeholder="Your Email">
-    <textarea placeholder="Your Message"></textarea>
-    <button onclick="sendMessage()">Send Message</button>
-  </div>
+<section id="contact" class="section reveal">
+    <h2>Contact Us</h2>
+    <p>Email: info@ercmasoro.org</p>
+    <p>Phone: +250 700 000 000</p>
+    <p>Location: Masoro, Rwanda</p>
 </section>
 
 <footer>
-  <p>&copy; 2026 ERC Masoro Evangelism Ministry</p>
+    <p>&copy; 2026 ERC Masoro Evangelism Ministry - All Rights Reserved</p>
 </footer>
 
 <script>
+// Scroll button
 function scrollToSection(id){
-  document.getElementById(id).scrollIntoView({behavior:'smooth'})
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
 }
 
-function toggleMenu(){
-  document.getElementById('menu').classList.toggle('active')
-}
+// Reveal on scroll
+function reveal(){
+  const reveals = document.querySelectorAll('.reveal');
+  for(let i=0;i<reveals.length;i++){
+    const windowHeight = window.innerHeight;
+    const elementTop = reveals[i].getBoundingClientRect().top;
+    const visible = 100;
 
-window.addEventListener('scroll',function(){
-  const header=document.getElementById('header')
-  header.classList.toggle('scrolled',window.scrollY>50)
-})
-
-function sendMessage(){
-  alert('Message sent successfully!')
+    if(elementTop < windowHeight - visible){
+      reveals[i].classList.add('active');
+    }
+  }
 }
+window.addEventListener('scroll', reveal);
+
+// Initial trigger
+reveal();
 </script>
 
 </body>
